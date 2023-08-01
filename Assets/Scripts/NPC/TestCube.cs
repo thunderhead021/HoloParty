@@ -8,6 +8,7 @@ public class TestCube : NetworkBehaviour
     public Material[] testColor;
     public MeshRenderer mesh;
 
+
     [ServerCallback]
     private void OnTriggerEnter(Collider col)
 	{
