@@ -14,7 +14,10 @@ public class PlayerLobbyInfo : MonoBehaviour
 
     public Text playerNameTxt;
     public RawImage avatarIcon;
+
     public Image charSelected;
+    //test only
+    public Color testMode;
 
     public GameObject playerReadyBox;
     public bool playerReady;
@@ -32,6 +35,11 @@ public class PlayerLobbyInfo : MonoBehaviour
     public void ChangeReadyStatus() 
     {
         playerReadyBox.SetActive(playerReady);
+    }
+
+    public void ChangeCharSelected() 
+    {
+        charSelected.color = testMode;
     }
 
 	private void OnImageLoaded(AvatarImageLoaded_t avatarCall)
@@ -56,6 +64,7 @@ public class PlayerLobbyInfo : MonoBehaviour
     {
         playerNameTxt.text = playerName;
         ChangeReadyStatus();
+        ChangeCharSelected();
         if (!avatarRecived) 
         {
             GetPlayerIcon();

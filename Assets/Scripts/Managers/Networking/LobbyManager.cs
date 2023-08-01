@@ -161,7 +161,9 @@ public class LobbyManager : MonoBehaviour
                 {
                     lobbyInfo.playerName = playerController.playerSteamName;
                     lobbyInfo.playerReady = playerController.ready;
-                    lobbyInfo.charSelected.color = playerController.charModel;
+
+                    //test only
+                    lobbyInfo.testMode = playerController.charModel;
                     lobbyInfo.SetPlayerInfo();
                 }
             }

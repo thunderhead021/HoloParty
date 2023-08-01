@@ -10,7 +10,7 @@ public class TestMapData : BaseMapData
 	public override void SetPostion(int startPos)
 	{
 		Vector3 spawnLocation = spawnPos[startPos].transform.position;
-		transform.parent.transform.position = new Vector3(spawnLocation.x, spawnLocation.y + 1, spawnLocation.z);
+		transform.parent.transform.position = new Vector3(spawnLocation.x, 2, spawnLocation.z);
 	}
 
 	public override void Movement()

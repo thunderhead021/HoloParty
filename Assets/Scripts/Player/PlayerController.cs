@@ -18,7 +18,7 @@ public class PlayerController : NetworkBehaviour
     [SyncVar(hook = nameof(playerReadyUpdate))] public bool ready;
 
     //Character data
-    [SyncVar(hook = nameof(playerCharID))] public int charID;
+    [SyncVar(hook = nameof(playerCharID))] public int charID = 0;
     [SyncVar(hook = nameof(playerCharModel))] public Color charModel;
 
     private CustomNetworkManager networkManager;
