@@ -20,6 +20,6 @@ public class TestMapData : BaseMapData
 
 		Vector3 moveDir = new Vector3(xDir, 0.0f, zDir);
 
-		transform.parent.transform.position += moveDir * speed;
-	}
+		transform.parent.transform.position += moveDir * speed;        
+    }
 }
