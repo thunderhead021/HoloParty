@@ -164,6 +164,7 @@ public class LobbyManager : MonoBehaviour
 
                     //test only
                     lobbyInfo.testMode = playerController.charModel;
+                    Debug.Log(lobbyInfo.testMode.ToString() + ", " + playerController.charModel.ToString());
                     lobbyInfo.SetPlayerInfo();
                 }
             }
