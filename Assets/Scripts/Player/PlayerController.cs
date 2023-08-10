@@ -110,6 +110,8 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdUpdatePlayerChar(int value, Color model) 
     {
+        if (ready == true)
+            return;
         playerCharID(charID, value);
         playerCharModel(charModel, model);
         LobbyManager.instance.UpdatePlayerList();
@@ -126,6 +128,7 @@ public class PlayerController : NetworkBehaviour
     private void ClientCharModelUpdate(Color model)
     {
         charModel = model;
+        LobbyManager.instance.UpdatePlayerList();
     }
 
     public void playerCharID(int oldVal, int newVal) 
@@ -139,6 +142,7 @@ public class PlayerController : NetworkBehaviour
     private void ClientCharIDUpdate(int id) 
     {
         charID = id;
+        LobbyManager.instance.UpdatePlayerList();
     }
 
     public void ChangeCharSelected(int id, Color model)
