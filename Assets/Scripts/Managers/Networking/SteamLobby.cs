@@ -23,6 +23,9 @@ public class SteamLobby : MonoBehaviour
 	private const string hostAddressKey = "HostAddress";
 	private CustomNetworkManager networkManager;
 
+	[HideInInspector]
+	public bool finishStart = false;
+
 	private void Start()
 	{
 		if (!SteamManager.Initialized) { return; }
@@ -35,6 +38,20 @@ public class SteamLobby : MonoBehaviour
 
 		lobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbyList);
 		lobbyDataUpdate = Callback<LobbyDataUpdate_t>.Create(OnGetLobbyData);
+		finishStart = true;
+	}
+
+	public bool CanReconnet() 
+	{
+		if (PlayerPrefs.HasKey("currentLobbyID") == false)
+			return false;
+		foreach(CSteamID lobby in lobbyIDs) 
+		{
+			if (lobby.m_SteamID.ToString().Equals(PlayerPrefs.GetString("currentLobbyID")))
+				return true;
+		}
+		PlayerPrefs.DeleteKey("currentLobbyID");
+		return false;
 	}
 
 	private void OnLobbyCreated(LobbyCreated_t lobbyCreated_T)
@@ -66,7 +83,7 @@ public class SteamLobby : MonoBehaviour
 	private void OnLobbyEnter(LobbyEnter_t lobbyEnter_T) 
 	{
 		currentLobbyID = lobbyEnter_T.m_ulSteamIDLobby;
-
+		PlayerPrefs.SetString("currentLobbyID", currentLobbyID.ToString());
 
 		//Client
 		if (NetworkServer.active) { return; }
@@ -104,6 +121,7 @@ public class SteamLobby : MonoBehaviour
 	public void FindMatchBtnClick() 
 	{
 		GetLobbies();
+		
 		if (lobbyIDs.Count > 0)
 			SteamMatchmaking.JoinLobby(lobbyIDs[Random.Range(0, lobbyIDs.Count)]);
 		else

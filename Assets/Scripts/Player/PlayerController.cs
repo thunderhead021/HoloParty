@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Steamworks;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -42,22 +43,31 @@ public class PlayerController : NetworkBehaviour
 	{
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
         gameObject.name = "LocalPlayer";
-        LobbyManager.instance.FindLocalPlayer();
-        LobbyManager.instance.UpdateLobbyName();
-
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyManager.instance.FindLocalPlayer();
+            LobbyManager.instance.UpdateLobbyName();
+        }
     }
 
 	public override void OnStartClient()
 	{
         CustomNetworkManager.players.Add(this);
-        LobbyManager.instance.UpdateLobbyName();
-        LobbyManager.instance.UpdatePlayerList();
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyManager.instance.UpdateLobbyName();
+            LobbyManager.instance.UpdatePlayerList();
+        }
+       
     }
 
 	public override void OnStopClient()
 	{
         CustomNetworkManager.players.Remove(this);
-        LobbyManager.instance.UpdatePlayerList();
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyManager.instance.UpdatePlayerList();
+        }
     }
 
     [Command]
