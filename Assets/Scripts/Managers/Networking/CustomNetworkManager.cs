@@ -9,8 +9,7 @@ public class CustomNetworkManager : NetworkManager
 {
     [SerializeField]
     private PlayerController pcPrefab;
-	[SerializeField]
-	private bool hasSessionStarted = false;
+	public bool hasSessionStarted = false;
 	[SerializeField]
 	private string curScene;
 	public List<PlayerController> players { get; } = new List<PlayerController>();
@@ -37,6 +36,14 @@ public class CustomNetworkManager : NetworkManager
 			else 
 			{
 				Debug.Log((ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count));
+				foreach (PlayerController controller in disconnectedPlayers) 
+				{
+					if (controller.playerSteamID == (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count))
+					{
+						NetworkServer.AddPlayerForConnection(conn, controller.gameObject);
+						break;
+					}
+				}
 			}
 		}
 	}

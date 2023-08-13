@@ -168,7 +168,8 @@ public class LobbyManager : MonoBehaviour
                 }
             }
         }
-        CheckIfAllReady();
+        if(!networkManager.hasSessionStarted)
+            CheckIfAllReady();
     }
 
     public void RemovePlayerInfo() 

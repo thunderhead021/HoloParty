@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Mirror;
+﻿using Mirror;
 using Steamworks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
@@ -43,9 +41,9 @@ public class PlayerController : NetworkBehaviour
 	{
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
         gameObject.name = "LocalPlayer";
+        LobbyManager.instance.FindLocalPlayer();
         if (SceneManager.GetActiveScene().name == "Lobby")
-        {
-            LobbyManager.instance.FindLocalPlayer();
+        {     
             LobbyManager.instance.UpdateLobbyName();
         }
     }
@@ -57,6 +55,10 @@ public class PlayerController : NetworkBehaviour
         {
             LobbyManager.instance.UpdateLobbyName();
             LobbyManager.instance.UpdatePlayerList();
+        }
+        else if (networkManager.hasSessionStarted) 
+        {
+            LobbyManager.instance.UpdatePlayerInfo();
         }
        
     }

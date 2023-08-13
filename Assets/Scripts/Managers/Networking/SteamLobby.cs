@@ -37,6 +37,7 @@ public class SteamLobby : MonoBehaviour
 		lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
 
 		lobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbyList);
+		Debug.Log("Avaliable lobbies: " + lobbyIDs.Count);
 		lobbyDataUpdate = Callback<LobbyDataUpdate_t>.Create(OnGetLobbyData);
 		finishStart = true;
 	}
@@ -48,9 +49,13 @@ public class SteamLobby : MonoBehaviour
 		foreach(CSteamID lobby in lobbyIDs) 
 		{
 			if (lobby.m_SteamID.ToString().Equals(PlayerPrefs.GetString("currentLobbyID")))
+			{
+				Debug.Log("Can reconnect");
 				return true;
+			}
 		}
 		PlayerPrefs.DeleteKey("currentLobbyID");
+		PlayerPrefs.Save();
 		return false;
 	}
 
@@ -84,7 +89,7 @@ public class SteamLobby : MonoBehaviour
 	{
 		currentLobbyID = lobbyEnter_T.m_ulSteamIDLobby;
 		PlayerPrefs.SetString("currentLobbyID", currentLobbyID.ToString());
-
+		PlayerPrefs.Save();
 		//Client
 		if (NetworkServer.active) { return; }
 

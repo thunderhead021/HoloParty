@@ -14,6 +14,7 @@ public class ReconnectBtn : MonoBehaviour
             return;
         if (SteamLobby.instance.finishStart == true)
         {
+            Debug.Log("Checked reconnect");
             gameObject.SetActive(SteamLobby.instance.CanReconnet());
             started = true;
         }
