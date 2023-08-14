@@ -1133,6 +1133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentLobbyID: 0
+  finishStart: 0
 --- !u!114 &2129178328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1205,6 +1206,8 @@ MonoBehaviour:
   timeInterpolationGui: 0
   pcPrefab: {fileID: 2968367000736355062, guid: 3c7a217e62fc1ef45be56d7ad2a5eaaf,
     type: 3}
+  hasSessionStarted: 0
+  curScene: 
 --- !u!4 &2129178331
 Transform:
   m_ObjectHideFlags: 0

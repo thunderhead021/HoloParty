@@ -54,6 +54,7 @@ public class SteamLobby : MonoBehaviour
 				return true;
 			}
 		}
+		Debug.Log("Outside loop");
 		PlayerPrefs.DeleteKey("currentLobbyID");
 		PlayerPrefs.Save();
 		return false;
