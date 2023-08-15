@@ -17,16 +17,13 @@ public class CustomNetworkManager : NetworkManager
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
-		if (SceneManager.GetActiveScene().name == "Lobby")
-		{
-			PlayerController pcInstance = Instantiate(pcPrefab);
-			pcInstance.connectID = conn.connectionId;
-			pcInstance.playerIDnumber = players.Count + 1;
-			pcInstance.playerSteamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
+		PlayerController pcInstance = Instantiate(pcPrefab);
+		pcInstance.connectID = conn.connectionId;
+		pcInstance.playerIDnumber = players.Count + 1;
+		pcInstance.playerSteamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
 
-			NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
-		}
-		else if (hasSessionStarted) 
+		NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
+		if (hasSessionStarted) 
 		{	
 			if (disconnectedPlayers.Count == 0)
 			{
@@ -38,9 +35,12 @@ public class CustomNetworkManager : NetworkManager
 				Debug.Log((ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count));
 				foreach (PlayerController controller in disconnectedPlayers) 
 				{
-					if (controller.playerSteamID == (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count))
+					if (controller.playerSteamID == pcInstance.playerSteamID)
 					{
-						NetworkServer.AddPlayerForConnection(conn, controller.gameObject);
+						Debug.Log("Found disconnected player");
+						pcInstance.Copy(controller);
+						disconnectedPlayers.Remove(controller);
+						Destroy(controller);
 						break;
 					}
 				}

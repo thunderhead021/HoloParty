@@ -15,6 +15,8 @@ public class SteamLobby : MonoBehaviour
 	protected Callback<GameLobbyJoinRequested_t> lobbyJoinRequest;
 	protected Callback<LobbyEnter_t> lobbyEnter;
 
+	[HideInInspector]
+	public bool finishFindLobby = false;
 	protected Callback<LobbyMatchList_t> lobbyList;
 	protected Callback<LobbyDataUpdate_t> lobbyDataUpdate;
 	List<CSteamID> lobbyIDs = new List<CSteamID>();
@@ -46,7 +48,7 @@ public class SteamLobby : MonoBehaviour
 	{
 		if (PlayerPrefs.HasKey("currentLobbyID") == false)
 			return false;
-		foreach(CSteamID lobby in lobbyIDs) 
+		foreach (CSteamID lobby in lobbyIDs) 
 		{
 			if (lobby.m_SteamID.ToString().Equals(PlayerPrefs.GetString("currentLobbyID")))
 			{
@@ -102,12 +104,16 @@ public class SteamLobby : MonoBehaviour
 
 	private void OnGetLobbyList(LobbyMatchList_t lobbyMatchList) 
 	{
+		if (lobbyIDs.Count > 0)
+			lobbyIDs.Clear();
 		for (int i = 0; i < lobbyMatchList.m_nLobbiesMatching; i++) 
 		{
 			CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
 			lobbyIDs.Add(lobbyID);
 			SteamMatchmaking.RequestLobbyData(lobbyID);
 		}
+		Debug.Log("3 " + lobbyIDs.Count);
+		finishFindLobby = true;
 	}
 
 	private void OnGetLobbyData(LobbyDataUpdate_t lobbyData) 
@@ -119,17 +125,25 @@ public class SteamLobby : MonoBehaviour
 	{
 		if (lobbyIDs.Count > 0)
 			lobbyIDs.Clear();
-
 		SteamMatchmaking.AddRequestLobbyListResultCountFilter(60);
 		SteamMatchmaking.RequestLobbyList();
+		finishFindLobby = false;
+		Debug.Log("1 "+ lobbyIDs.Count);
 	}
 
 	public void FindMatchBtnClick() 
 	{
+		StartCoroutine(FindMatch());	
+	}
+
+	IEnumerator FindMatch() 
+	{
 		GetLobbies();
-		
+		yield return new WaitWhile(() => finishFindLobby == false);
 		if (lobbyIDs.Count > 0)
+		{
 			SteamMatchmaking.JoinLobby(lobbyIDs[Random.Range(0, lobbyIDs.Count)]);
+		}
 		else
 			OnHostBtnClick();
 	}

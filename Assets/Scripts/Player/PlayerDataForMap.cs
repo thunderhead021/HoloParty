@@ -20,7 +20,7 @@ public class PlayerDataForMap : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (SceneManager.GetActiveScene().name.Contains("Map")) 
+        if (SceneManager.GetActiveScene().name.Contains("Map") && GetComponent<PlayerController>().ready) 
         {  
             if (!curMapName.Equals(SceneManager.GetActiveScene().name)) 
             {

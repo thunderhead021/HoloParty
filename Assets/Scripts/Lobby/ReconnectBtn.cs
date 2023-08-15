@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ReconnectBtn : MonoBehaviour
 {
@@ -15,9 +16,18 @@ public class ReconnectBtn : MonoBehaviour
         if (SteamLobby.instance.finishStart == true)
         {
             Debug.Log("Checked reconnect");
-            gameObject.SetActive(SteamLobby.instance.CanReconnet());
-            started = true;
+            StartCoroutine(CheckedReconnect());
         }
+    }
+
+    IEnumerator CheckedReconnect()
+    {
+        SteamLobby.instance.GetLobbies();
+        yield return new WaitWhile(() => SteamLobby.instance.finishFindLobby == false);
+        bool connection = SteamLobby.instance.CanReconnet();
+        gameObject.SetActive(connection);
+        GetComponent<Button>().interactable = connection;
+        started = true;
     }
 
     public void OnClick() 

@@ -27,6 +27,17 @@ public class PlayerController : NetworkBehaviour
         DontDestroyOnLoad(gameObject);
 	}
 
+    public void Copy(PlayerController other) 
+    {
+        connectID = other.connectID;
+        ready = other.ready;
+        charID = other.charID;
+        charModel = other.charModel;
+        ChangeCharSelected(charID, charModel);
+
+        transform.position = other.transform.position;
+    }
+
 	private CustomNetworkManager CustomNetworkManager 
     {
         get 
@@ -41,9 +52,9 @@ public class PlayerController : NetworkBehaviour
 	{
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
         gameObject.name = "LocalPlayer";
-        LobbyManager.instance.FindLocalPlayer();
         if (SceneManager.GetActiveScene().name == "Lobby")
-        {     
+        {
+            LobbyManager.instance.FindLocalPlayer();
             LobbyManager.instance.UpdateLobbyName();
         }
     }
@@ -58,7 +69,7 @@ public class PlayerController : NetworkBehaviour
         }
         else if (networkManager.hasSessionStarted) 
         {
-            LobbyManager.instance.UpdatePlayerInfo();
+            //LobbyManager.instance.UpdatePlayerInfo();
         }
        
     }
