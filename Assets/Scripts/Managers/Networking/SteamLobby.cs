@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using Steamworks;
 using UnityEngine.UI;
+using System;
 
 public class SteamLobby : MonoBehaviour
 {
@@ -48,15 +49,11 @@ public class SteamLobby : MonoBehaviour
 	{
 		if (PlayerPrefs.HasKey("currentLobbyID") == false)
 			return false;
-		foreach (CSteamID lobby in lobbyIDs) 
-		{
-			if (lobby.m_SteamID.ToString().Equals(PlayerPrefs.GetString("currentLobbyID")))
-			{
-				Debug.Log("Can reconnect");
-				return true;
-			}
-		}
-		Debug.Log("Outside loop");
+		CSteamID curlobbyID = new CSteamID(Convert.ToUInt64(PlayerPrefs.GetString("currentLobbyID")));
+		Debug.Log(curlobbyID + ", " + SteamMatchmaking.GetNumLobbyMembers(curlobbyID));
+		if (SteamMatchmaking.GetNumLobbyMembers(curlobbyID) > 0)
+			return true;
+		Debug.Log("Game is ended/Lobby not exist");
 		PlayerPrefs.DeleteKey("currentLobbyID");
 		PlayerPrefs.Save();
 		return false;
@@ -142,7 +139,7 @@ public class SteamLobby : MonoBehaviour
 		yield return new WaitWhile(() => finishFindLobby == false);
 		if (lobbyIDs.Count > 0)
 		{
-			SteamMatchmaking.JoinLobby(lobbyIDs[Random.Range(0, lobbyIDs.Count)]);
+			SteamMatchmaking.JoinLobby(lobbyIDs[UnityEngine.Random.Range(0, lobbyIDs.Count)]);
 		}
 		else
 			OnHostBtnClick();

@@ -16,18 +16,11 @@ public class ReconnectBtn : MonoBehaviour
         if (SteamLobby.instance.finishStart == true)
         {
             Debug.Log("Checked reconnect");
-            StartCoroutine(CheckedReconnect());
+            bool connection = SteamLobby.instance.CanReconnet();
+            gameObject.SetActive(connection);
+            GetComponent<Button>().interactable = connection;
+            started = true;
         }
-    }
-
-    IEnumerator CheckedReconnect()
-    {
-        SteamLobby.instance.GetLobbies();
-        yield return new WaitWhile(() => SteamLobby.instance.finishFindLobby == false);
-        bool connection = SteamLobby.instance.CanReconnet();
-        gameObject.SetActive(connection);
-        GetComponent<Button>().interactable = connection;
-        started = true;
     }
 
     public void OnClick() 
