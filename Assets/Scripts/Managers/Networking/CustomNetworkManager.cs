@@ -53,7 +53,8 @@ public class CustomNetworkManager : NetworkManager
 	public override void OnServerDisconnect(NetworkConnectionToClient conn)
 	{
 		object data = conn.authenticationData;
-		Debug.Log(data.ToString());
+		Debug.Log(conn.identity.name);
+		Debug.Log(conn.authenticationData.ToString());
 		if (hasSessionStarted)
 		{
 			foreach (PlayerController player in players)
