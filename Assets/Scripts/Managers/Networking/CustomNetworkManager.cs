@@ -14,8 +14,8 @@ public class CustomNetworkManager : NetworkManager
 	private string curScene;
 	public List<PlayerController> players { get; } = new List<PlayerController>();
 
-	private Dictionary<object, GameObject> disconnectedPlayers { get; } = new Dictionary<object, GameObject>();
-	private Dictionary<object, PlayerController> connectedPlayers { get; } = new Dictionary<object, PlayerController>();
+	private Dictionary<ulong, GameObject> disconnectedPlayers { get; } = new Dictionary<ulong, GameObject>();
+	private Dictionary<ulong, PlayerController> connectedPlayers { get; } = new Dictionary<ulong, PlayerController>();
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
@@ -28,10 +28,11 @@ public class CustomNetworkManager : NetworkManager
 			}
 			else 
 			{
-				Debug.Log((ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count));
-				foreach (KeyValuePair<object, GameObject> ele1 in disconnectedPlayers)
+				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
+				Debug.Log(id);
+				foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
 				{
-					if (conn.authenticationData == ele1.Key)
+					if (id == ele1.Key)
 					{
 						Debug.Log("Found disconnected player");
 						NetworkServer.ReplacePlayerForConnection(conn, ele1.Value);
@@ -47,8 +48,7 @@ public class CustomNetworkManager : NetworkManager
 			pcInstance.playerIDnumber = players.Count + 1;
 			pcInstance.playerSteamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
 
-			Debug.Log(conn.authenticationData.ToString());
-			connectedPlayers.Add(conn.authenticationData, pcInstance);
+			connectedPlayers.Add(pcInstance.playerSteamID, pcInstance);
 			NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
 		}
 	}
@@ -57,7 +57,7 @@ public class CustomNetworkManager : NetworkManager
 	{
 		if (hasSessionStarted)
 		{
-			foreach (KeyValuePair<object, PlayerController> ele1 in connectedPlayers)
+			foreach (KeyValuePair<ulong, PlayerController> ele1 in connectedPlayers)
 			{
 				if (ele1.Value.connectID == conn.connectionId)
 				{
@@ -65,9 +65,9 @@ public class CustomNetworkManager : NetworkManager
 					{
 						Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
 						Debug.Log(ele1.Key.ToString() + "in loop");
-						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);		
+						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
 						ele1.Value.gameObject.SetActive(false);
-						connectedPlayers.Remove(ele1);
+						connectedPlayers.Remove(ele1.Key);
 						NetworkServer.RemovePlayerForConnection(conn, false);
 					}
 					break;
