@@ -15,6 +15,7 @@ public class CustomNetworkManager : NetworkManager
 	public List<PlayerController> players { get; } = new List<PlayerController>();
 
 	private Dictionary<object, GameObject> disconnectedPlayers { get; } = new Dictionary<object, GameObject>();
+	private Dictionary<object, PlayerController> connectedPlayers { get; } = new Dictionary<object, PlayerController>();
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
@@ -46,27 +47,27 @@ public class CustomNetworkManager : NetworkManager
 			pcInstance.playerIDnumber = players.Count + 1;
 			pcInstance.playerSteamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
 
+			Debug.Log(conn.authenticationData.ToString());
+			connectedPlayers.Add(conn.authenticationData, pcInstance);
 			NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
 		}
 	}
 
 	public override void OnServerDisconnect(NetworkConnectionToClient conn)
 	{
-		object data = conn.authenticationData;
-		Debug.Log(conn.identity.name);
-		Debug.Log(conn.authenticationData.ToString());
 		if (hasSessionStarted)
 		{
-			foreach (PlayerController player in players)
+			foreach (KeyValuePair<object, PlayerController> ele1 in connectedPlayers)
 			{
-				if (player.connectID == conn.connectionId)
+				if (ele1.Value.connectID == conn.connectionId)
 				{
 					if (hasSessionStarted)
 					{
-						Debug.Log(player.playerSteamName + " ID: "  + player.playerSteamID + " has disconnected!");
-						Debug.Log(data.ToString() + "in loop");
-						disconnectedPlayers.Add(data, player.gameObject);
-						player.gameObject.SetActive(false);
+						Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
+						Debug.Log(ele1.Key.ToString() + "in loop");
+						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);		
+						ele1.Value.gameObject.SetActive(false);
+						connectedPlayers.Remove(ele1);
 						NetworkServer.RemovePlayerForConnection(conn, false);
 					}
 					break;
