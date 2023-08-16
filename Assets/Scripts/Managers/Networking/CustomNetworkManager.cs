@@ -52,6 +52,7 @@ public class CustomNetworkManager : NetworkManager
 
 	public override void OnServerDisconnect(NetworkConnectionToClient conn)
 	{
+		object data = conn.authenticationData;
 		if (hasSessionStarted)
 		{
 			foreach (PlayerController player in players)
@@ -61,7 +62,7 @@ public class CustomNetworkManager : NetworkManager
 					if (hasSessionStarted)
 					{
 						Debug.Log(player.playerSteamName + " ID: "  + player.playerSteamID + " has disconnected!");
-						disconnectedPlayers.Add(conn.authenticationData, player.gameObject);
+						disconnectedPlayers.Add(data, player.gameObject);
 						player.gameObject.SetActive(false);
 						NetworkServer.RemovePlayerForConnection(conn, false);
 					}
