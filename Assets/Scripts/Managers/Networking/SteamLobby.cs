@@ -48,19 +48,13 @@ public class SteamLobby : MonoBehaviour
 	public bool CanReconnet() 
 	{
 		if (PlayerPrefs.HasKey("currentLobbyID") == false)
-		{
-			PlayerPrefs.DeleteKey("currentLobbyID");
-			PlayerPrefs.Save();
 			return false;
-		}
 		//CSteamID curlobbyID = new CSteamID(Convert.ToUInt64(PlayerPrefs.GetString("currentLobbyID")));
 		//Debug.Log(curlobbyID + ", " + SteamMatchmaking.GetNumLobbyMembers(curlobbyID));
 		//if (SteamMatchmaking.JoinLobby(curlobbyID) > 0)
 		return true;
 		//Debug.Log("Game is ended/Lobby not exist");
-		//PlayerPrefs.DeleteKey("currentLobbyID");
-		//PlayerPrefs.Save();
-		//return false;
+		
 	}
 
 	private void OnLobbyCreated(LobbyCreated_t lobbyCreated_T)
