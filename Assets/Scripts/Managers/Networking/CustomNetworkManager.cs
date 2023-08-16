@@ -61,8 +61,8 @@ public class CustomNetworkManager : NetworkManager
 					if (hasSessionStarted)
 					{
 						Debug.Log(player.playerSteamName + " ID: "  + player.playerSteamID + " has disconnected!");
-						player.gameObject.SetActive(false);
 						disconnectedPlayers.Add(conn.authenticationData, player.gameObject);
+						player.gameObject.SetActive(false);
 						NetworkServer.RemovePlayerForConnection(conn, false);
 					}
 					break;
