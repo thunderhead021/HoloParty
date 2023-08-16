@@ -68,7 +68,7 @@ public class CustomNetworkManager : NetworkManager
 						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
 						ele1.Value.gameObject.SetActive(false);
 						connectedPlayers.Remove(ele1.Key);
-						NetworkServer.RemovePlayerForConnection(conn, false);
+						//NetworkServer.RemovePlayerForConnection(conn, false);
 					}
 					break;
 				}
