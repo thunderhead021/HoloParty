@@ -27,17 +27,6 @@ public class PlayerController : NetworkBehaviour
         DontDestroyOnLoad(gameObject);
 	}
 
-    public void Copy(PlayerController other) 
-    {
-        connectID = other.connectID;
-        ready = other.ready;
-        charID = other.charID;
-        charModel = other.charModel;
-        ChangeCharSelected(charID, charModel);
-
-        transform.position = other.transform.position;
-    }
-
 	private CustomNetworkManager CustomNetworkManager 
     {
         get 

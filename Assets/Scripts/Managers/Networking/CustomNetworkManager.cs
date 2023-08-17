@@ -35,7 +35,12 @@ public class CustomNetworkManager : NetworkManager
 					if (id == ele1.Key)
 					{
 						Debug.Log("Found disconnected player");
+						ele1.Value.SetActive(true);
+						connectedPlayers.Add(ele1.Key, ele1.Value.GetComponent<PlayerController>());
 						NetworkServer.ReplacePlayerForConnection(conn, ele1.Value);
+						ele1.Value.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
+						disconnectedPlayers.Remove(ele1.Key);
+
 						break;
 					}
 				}
