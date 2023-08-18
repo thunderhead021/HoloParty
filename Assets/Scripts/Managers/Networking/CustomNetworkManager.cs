@@ -29,7 +29,7 @@ public class CustomNetworkManager : NetworkManager
 			else 
 			{
 				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
-				Debug.Log(id);
+				Debug.Log(id + ", " + players.Count + ", " + conn.connectionId);
 				foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
 				{
 					if (id == ele1.Key)
@@ -69,7 +69,7 @@ public class CustomNetworkManager : NetworkManager
 					if (hasSessionStarted)
 					{
 						Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
-						Debug.Log(ele1.Key.ToString() + "in loop");
+						Debug.Log(ele1.Key.ToString() + " in loop");
 						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
 						ele1.Value.gameObject.SetActive(false);
 						connectedPlayers.Remove(ele1.Key);
