@@ -15,5 +15,12 @@ public abstract class BaseMapData : MonoBehaviour
         GameObject model = Instantiate(mapModel[id]);
         model.transform.SetParent(parent.transform);
         model.transform.position = Vector3.zero;
+        Debug.Log("model" + model.transform.position);
+
+        if (parent.transform.childCount > 1)
+        {
+            Debug.Log("remove model");
+            Destroy(parent.transform.GetChild(1).gameObject);
+        }
     }
 }

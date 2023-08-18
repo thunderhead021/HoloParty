@@ -10,6 +10,10 @@ public class PlayerDataForMap : NetworkBehaviour
     public GameObject playerModel;
     private string curMapName = "";
     private bool haveMapData = false;
+    [SyncVar]
+    public Vector3 playerBoardPos = Vector3.zero;
+    [SyncVar]
+    public bool boardPosUpdate = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +32,7 @@ public class PlayerDataForMap : NetworkBehaviour
                 {
                     Destroy(transform.GetChild(1).gameObject);
                 }
-                
+
                 GameObject mapData = GameObject.FindGameObjectWithTag("MapData");
                 if (mapData != null && mapData.transform.root == mapData.transform)
                 {
@@ -39,6 +43,8 @@ public class PlayerDataForMap : NetworkBehaviour
                     curMapName = SceneManager.GetActiveScene().name;
                     haveMapData = true;
                     playerModel.SetActive(true);
+                    playerBoardPos = transform.position;
+                    boardPosUpdate = false;
                 }
                 else 
                 {
@@ -49,6 +55,11 @@ public class PlayerDataForMap : NetworkBehaviour
             }
             if(isOwned && haveMapData)
                 transform.GetComponentInChildren<BaseMapData>().Movement();
+        }
+        if (!boardPosUpdate) 
+        {
+            transform.position = playerBoardPos;
+            boardPosUpdate = true;
         }
     }
 }
