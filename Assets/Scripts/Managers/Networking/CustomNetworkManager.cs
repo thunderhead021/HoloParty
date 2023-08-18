@@ -38,7 +38,6 @@ public class CustomNetworkManager : NetworkManager
 						Debug.Log("Found disconnected player");
 						ele1.Value.SetActive(true);
 						connectedPlayers.Add(ele1.Key, ele1.Value.GetComponent<PlayerController>());
-						ele1.Value.GetComponent<NetworkIdentity>().RemoveClientAuthority();
 						NetworkServer.ReplacePlayerForConnection(conn, ele1.Value);
 						ele1.Value.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
 						ele1.Value.GetComponent<PlayerController>().connectID = conn.connectionId;
@@ -78,7 +77,8 @@ public class CustomNetworkManager : NetworkManager
 						ele1.Value.gameObject.SetActive(false);
 						connectedPlayers.Remove(ele1.Key);
 						players.Remove(ele1.Value);
-						//NetworkServer.RemovePlayerForConnection(conn, false);
+						NetworkServer.RemovePlayerForConnection(conn, false);
+						ele1.Value.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
 					}
 					break;
 				}
