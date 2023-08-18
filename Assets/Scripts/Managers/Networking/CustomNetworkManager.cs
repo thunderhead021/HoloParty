@@ -28,7 +28,7 @@ public class CustomNetworkManager : NetworkManager
 			}
 			else 
 			{
-				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count);
+				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, players.Count + 1);
 				Debug.Log(id + ", " + players.Count + ", " + conn.connectionId);
 				foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
 				{
