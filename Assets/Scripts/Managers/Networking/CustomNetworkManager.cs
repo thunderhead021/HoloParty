@@ -74,11 +74,12 @@ public class CustomNetworkManager : NetworkManager
 						Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
 						Debug.Log(ele1.Key.ToString() + " in loop");
 						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
-						ele1.Value.gameObject.SetActive(false);
+						
 						connectedPlayers.Remove(ele1.Key);
 						players.Remove(ele1.Value);
 						NetworkServer.RemovePlayerForConnection(conn, false);
 						ele1.Value.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
+						ele1.Value.gameObject.SetActive(false);
 					}
 					break;
 				}
