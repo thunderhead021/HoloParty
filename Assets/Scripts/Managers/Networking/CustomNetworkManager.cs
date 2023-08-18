@@ -29,7 +29,7 @@ public class CustomNetworkManager : NetworkManager
 			else 
 			{
 				
-				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID));
+				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID) - 1);
 				Debug.Log(id + ", " + players.Count + ", " + conn.connectionId + ", " + SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID));
 				foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
 				{
@@ -74,6 +74,7 @@ public class CustomNetworkManager : NetworkManager
 						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
 						ele1.Value.gameObject.SetActive(false);
 						connectedPlayers.Remove(ele1.Key);
+						players.Remove(ele1.Value);
 						//NetworkServer.RemovePlayerForConnection(conn, false);
 					}
 					break;
