@@ -41,7 +41,6 @@ public class CustomNetworkManager : NetworkManager
 						NetworkServer.ReplacePlayerForConnection(conn, ele1.Value);
 						ele1.Value.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
 						disconnectedPlayers.Remove(ele1.Key);
-
 						break;
 					}
 				}
@@ -56,6 +55,7 @@ public class CustomNetworkManager : NetworkManager
 
 			connectedPlayers.Add(pcInstance.playerSteamID, pcInstance);
 			NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
+			Debug.Log(pcInstance.playerSteamID + ", " + players.Count + ", " + conn.connectionId + ", " + SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID));
 		}
 	}
 
@@ -74,7 +74,7 @@ public class CustomNetworkManager : NetworkManager
 						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
 						ele1.Value.gameObject.SetActive(false);
 						connectedPlayers.Remove(ele1.Key);
-						NetworkServer.RemovePlayerForConnection(conn, false);
+						//NetworkServer.RemovePlayerForConnection(conn, false);
 					}
 					break;
 				}
