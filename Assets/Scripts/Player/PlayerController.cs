@@ -22,7 +22,7 @@ public class PlayerController : NetworkBehaviour
 
     private CustomNetworkManager networkManager;
 
-	private void Start()
+	private void Awake()
 	{
         DontDestroyOnLoad(gameObject);
 	}
