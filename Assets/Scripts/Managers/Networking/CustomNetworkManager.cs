@@ -4,11 +4,13 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
 using Steamworks;
+using System;
 
 public class CustomNetworkManager : NetworkManager
 {
     [SerializeField]
     private PlayerController pcPrefab;
+
 	public bool hasSessionStarted = false;
 	[SerializeField]
 	private string curScene;
@@ -16,6 +18,11 @@ public class CustomNetworkManager : NetworkManager
 
 	private Dictionary<ulong, GameObject> disconnectedPlayers { get; } = new Dictionary<ulong, GameObject>();
 	private Dictionary<ulong, PlayerController> connectedPlayers { get; } = new Dictionary<ulong, PlayerController>();
+
+	public override void Start()
+	{
+		base.Start();
+	}
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
@@ -28,7 +35,9 @@ public class CustomNetworkManager : NetworkManager
 			}
 			else 
 			{
-				
+				GameObject player = Instantiate(playerPrefab);
+				NetworkServer.AddPlayerForConnection(conn, player);
+
 				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID) - 1);
 				Debug.Log(id + ", " + players.Count + ", " + conn.connectionId + ", " + SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID));
 				foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
@@ -36,13 +45,17 @@ public class CustomNetworkManager : NetworkManager
 					if (id == ele1.Key)
 					{
 						Debug.Log("Found disconnected player");
-						ele1.Value.SetActive(true);
-						connectedPlayers.Add(ele1.Key, ele1.Value.GetComponent<PlayerController>());
-						NetworkServer.ReplacePlayerForConnection(conn, ele1.Value);
-						ele1.Value.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
-						ele1.Value.GetComponent<PlayerController>().connectID = conn.connectionId;
-						ele1.Value.GetComponent<PlayerController>().playerIDnumber = players.Count + 1;
+						GameObject newPC = Instantiate(ele1.Value);
+						newPC.GetComponent<PlayerController>().connectID = conn.connectionId;
+						newPC.GetComponent<PlayerController>().playerIDnumber = players.Count + 1;
+						connectedPlayers.Add(ele1.Key, newPC.GetComponent<PlayerController>());
+
+						NetworkServer.ReplacePlayerForConnection(conn, newPC, true);
+						newPC.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
+
+						Destroy(ele1.Value, 0.1f);
 						disconnectedPlayers.Remove(ele1.Key);
+						Destroy(player, 0.1f);
 						break;
 					}
 				}
