@@ -50,8 +50,8 @@ public class CustomNetworkManager : NetworkManager
 						newPC.GetComponent<PlayerController>().playerIDnumber = players.Count + 1;
 						connectedPlayers.Add(ele1.Key, newPC.GetComponent<PlayerController>());
 
-						NetworkServer.AddPlayerForConnection(conn, newPC);
-						newPC.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
+						//NetworkServer.AddPlayerForConnection(conn, newPC);
+						//newPC.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
 
 						Destroy(ele1.Value, 0.1f);
 						disconnectedPlayers.Remove(ele1.Key);
