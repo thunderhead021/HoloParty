@@ -50,7 +50,7 @@ public class CustomNetworkManager : NetworkManager
 						newPC.GetComponent<PlayerController>().playerIDnumber = players.Count + 1;
 						connectedPlayers.Add(ele1.Key, newPC.GetComponent<PlayerController>());
 
-						NetworkServer.ReplacePlayerForConnection(conn, newPC, true);
+						NetworkServer.AddPlayerForConnection(conn, newPC);
 						newPC.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
 
 						Destroy(ele1.Value, 0.1f);
@@ -86,12 +86,13 @@ public class CustomNetworkManager : NetworkManager
 					{
 						Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
 						Debug.Log(ele1.Key.ToString() + " in loop");
-						disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
+						if(!disconnectedPlayers.ContainsKey(ele1.Key))
+							disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
 						
 						connectedPlayers.Remove(ele1.Key);
 						players.Remove(ele1.Value);
 						NetworkServer.RemovePlayerForConnection(conn, false);
-						ele1.Value.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
+						//ele1.Value.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
 						ele1.Value.gameObject.SetActive(false);
 					}
 					break;
