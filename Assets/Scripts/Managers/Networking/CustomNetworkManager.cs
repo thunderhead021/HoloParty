@@ -52,7 +52,7 @@ public class CustomNetworkManager : NetworkManager
 
 						//NetworkServer.AddPlayerForConnection(conn, newPC);
 						//newPC.GetComponent<NetworkIdentity>().AssignClientAuthority(conn);
-
+						newPC.SetActive(true);
 						Destroy(ele1.Value, 0.1f);
 						disconnectedPlayers.Remove(ele1.Key);
 						Destroy(player, 0.1f);
