@@ -34,7 +34,7 @@ public class PlayerDataForMap : NetworkBehaviour
                 }
 
                 GameObject mapData = GameObject.FindGameObjectWithTag("MapData");
-                if (mapData != null && mapData.transform.root == mapData.transform)
+                if (mapData != null && mapData.transform.root == mapData.transform && GetComponent<PlayerController>().charID >= 0)
                 {
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);

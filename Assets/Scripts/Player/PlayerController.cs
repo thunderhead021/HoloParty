@@ -17,7 +17,7 @@ public class PlayerController : NetworkBehaviour
     [SyncVar(hook = nameof(playerReadyUpdate))] public bool ready;
 
     //Character data
-    [SyncVar(hook = nameof(playerCharID))] public int charID = 0;
+    [SyncVar(hook = nameof(playerCharID))] public int charID = -1;
     [SyncVar(hook = nameof(playerCharModel))] public Color charModel;
 
     private CustomNetworkManager networkManager;
@@ -26,6 +26,20 @@ public class PlayerController : NetworkBehaviour
 	{
         DontDestroyOnLoad(gameObject);
 	}
+
+    public void Copy(PlayerController playerController, NetworkConnectionToClient conn) 
+    {
+        transform.position = playerController.transform.position;
+
+        connectID = conn.connectionId;
+        playerIDnumber = networkManager.players.Count + 1;
+        playerSteamID = playerController.playerSteamID;
+        playerSteamName = playerController.playerSteamName;
+        
+        charID = playerController.charID;
+        charModel = playerController.charModel;
+        ready = playerController.ready;
+    }
 
 	private CustomNetworkManager CustomNetworkManager 
     {
