@@ -33,8 +33,8 @@ public class PlayerController : NetworkBehaviour
 
         connectID = conn.connectionId;
         playerIDnumber = networkManager.players.Count + 1;
-        playerSteamID = playerController.playerSteamID;
-        playerSteamName = playerController.playerSteamName;
+        //playerSteamID = playerController.playerSteamID;
+        //playerSteamName = playerController.playerSteamName;
         
         charID = playerController.charID;
         charModel = playerController.charModel;
