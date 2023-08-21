@@ -8,6 +8,7 @@ public class PlayerDataForMap : NetworkBehaviour
 {
 
     public GameObject playerModel;
+    [SerializeField]
     private string curMapName = "";
     private bool haveMapData = false;
     [SyncVar]
