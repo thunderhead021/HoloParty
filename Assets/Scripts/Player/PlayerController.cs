@@ -22,19 +22,18 @@ public class PlayerController : NetworkBehaviour
 
     private CustomNetworkManager networkManager;
 
-	private void Awake()
+	private void Start()
 	{
         DontDestroyOnLoad(gameObject);
 	}
 
-    public void Copy(PlayerController playerController, NetworkConnectionToClient conn) 
+    public void Copy(PlayerController playerController, ulong id) 
     {
         transform.position = playerController.transform.position;
 
-        connectID = conn.connectionId;
+        connectID = playerController.connectID;
         playerIDnumber = networkManager.players.Count + 1;
-        //playerSteamID = playerController.playerSteamID;
-        //playerSteamName = playerController.playerSteamName;
+        playerSteamID = id;
         
         charID = playerController.charID;
         charModel = playerController.charModel;

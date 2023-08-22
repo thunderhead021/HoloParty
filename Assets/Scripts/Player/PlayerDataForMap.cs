@@ -39,13 +39,13 @@ public class PlayerDataForMap : NetworkBehaviour
                 {
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);
-                    transform.GetComponentInChildren<BaseMapData>().SetMapModel(GetComponent<PlayerController>().charID, transform.GetChild(0).gameObject);
+                  
                     transform.GetComponentInChildren<BaseMapData>().SetPostion(GetComponent<PlayerController>().connectID);
-                    curMapName = SceneManager.GetActiveScene().name;
-                    haveMapData = true;
-                    playerModel.SetActive(true);
                     playerBoardPos = transform.position;
                     boardPosUpdate = false;
+
+                    UpdatePlayerModel();
+
                 }
                 else 
                 {
@@ -54,13 +54,23 @@ public class PlayerDataForMap : NetworkBehaviour
                 }
                 
             }
-            if(isOwned && haveMapData)
+            if (isOwned && haveMapData)
+            {
                 transform.GetComponentInChildren<BaseMapData>().Movement();
+            }
         }
         if (!boardPosUpdate) 
         {
             transform.position = playerBoardPos;
             boardPosUpdate = true;
         }
+    }
+
+    public void UpdatePlayerModel() 
+    {
+        transform.GetComponentInChildren<BaseMapData>().SetMapModel(GetComponent<PlayerController>().charID, transform.GetChild(0).gameObject);
+        curMapName = SceneManager.GetActiveScene().name;
+        haveMapData = true;
+        playerModel.SetActive(true);
     }
 }
