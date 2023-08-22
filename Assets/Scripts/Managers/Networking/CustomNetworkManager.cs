@@ -45,7 +45,7 @@ public class CustomNetworkManager : NetworkManager
 					if (id == ele1.Key)
 					{
 						Debug.Log("Found disconnected player");
-						PlayerController pcInstance = Instantiate(pcPrefab);
+						//PlayerController pcInstance = Instantiate(pcPrefab);
 
 						//pcInstance.Copy(ele1.Value.GetComponent<PlayerController>());
 
@@ -54,7 +54,7 @@ public class CustomNetworkManager : NetworkManager
 						//Destroy(player, 0.1f);
 
 						//connectedPlayers.Add(pcInstance.playerSteamID, pcInstance);
-						NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
+						//NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
 
 						ReloadGame();
 						break;

@@ -72,5 +72,6 @@ public class PlayerDataForMap : NetworkBehaviour
         curMapName = SceneManager.GetActiveScene().name;
         haveMapData = true;
         playerModel.SetActive(true);
+        playerModel.transform.GetChild(0).transform.position = Vector3.zero;
     }
 }
