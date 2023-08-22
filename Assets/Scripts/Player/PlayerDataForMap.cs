@@ -39,13 +39,14 @@ public class PlayerDataForMap : NetworkBehaviour
                 {
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);
-                  
+                    
+                    UpdatePlayerModel();
+
                     transform.GetComponentInChildren<BaseMapData>().SetPostion(GetComponent<PlayerController>().connectID);
                     playerBoardPos = transform.position;
                     boardPosUpdate = false;
 
-                    UpdatePlayerModel();
-
+                   
                 }
                 else 
                 {
@@ -72,6 +73,6 @@ public class PlayerDataForMap : NetworkBehaviour
         curMapName = SceneManager.GetActiveScene().name;
         haveMapData = true;
         playerModel.SetActive(true);
-        playerModel.transform.GetChild(0).transform.position = Vector3.zero;
+        
     }
 }
