@@ -75,7 +75,7 @@ public class CustomNetworkManager : NetworkManager
 		}
 	}
 
-	[ClientRpc]
+	[ClientCallback]
 	public void ReloadGame() 
 	{
 		foreach (PlayerController player in players) 

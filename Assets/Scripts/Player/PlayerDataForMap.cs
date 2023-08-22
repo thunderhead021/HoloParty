@@ -67,6 +67,7 @@ public class PlayerDataForMap : NetworkBehaviour
         }
     }
 
+
     public void UpdatePlayerModel() 
     {
         transform.GetComponentInChildren<BaseMapData>().SetMapModel(GetComponent<PlayerController>().charID, transform.GetChild(0).gameObject);
