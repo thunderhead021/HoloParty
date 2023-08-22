@@ -75,10 +75,12 @@ public class CustomNetworkManager : NetworkManager
 		}
 	}
 
+	[ClientRpc]
 	public void ReloadGame() 
 	{
 		foreach (PlayerController player in players) 
 		{
+			Debug.Log(player.playerSteamName + "update model");
 			player.GetComponent<PlayerDataForMap>().UpdatePlayerModel();
 		}
 	}
