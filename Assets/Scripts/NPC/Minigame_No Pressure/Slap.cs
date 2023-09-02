@@ -5,10 +5,7 @@ using UnityEngine;
 
 public class Slap : NetworkBehaviour
 {
-    private Rigidbody2D gravityControl;
-
-    [SyncVar]
-    public float gravityScale = 1;
+    private Rigidbody gravityControl;
 
     [ServerCallback]
     private void OnTriggerEnter(Collider col)
@@ -32,8 +29,7 @@ public class Slap : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gravityControl = GetComponent<Rigidbody2D>();
-        gravityControl.gravityScale = gravityScale;
+        gravityControl = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -41,9 +37,8 @@ public class Slap : NetworkBehaviour
     {
         if (transform.position.y < 0.03f)
         {
-            gravityScale = 0;
-            gravityControl.gravityScale = gravityScale;
-            gravityControl.simulated = false;
+            gravityControl.useGravity = false;
+            gravityControl.angularDrag = 0;
             transform.position = new Vector3(0, 0.03f, 0);
         }
     }

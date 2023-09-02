@@ -16,8 +16,11 @@ public class CustomNetworkManager : NetworkManager
 	private string curScene;
 	public List<PlayerController> players { get; } = new List<PlayerController>();
 
-	private Dictionary<ulong, GameObject> disconnectedPlayers { get; } = new Dictionary<ulong, GameObject>();
+	//private Dictionary<ulong, GameObject> disconnectedPlayers { get; } = new Dictionary<ulong, GameObject>();
 	private Dictionary<ulong, PlayerController> connectedPlayers { get; } = new Dictionary<ulong, PlayerController>();
+
+	//public delegate void PlayerReconnectedDelegate(NetworkConnection connection);
+	//public static event PlayerReconnectedDelegate OnPlayerReconnected;
 
 	public override void Start()
 	{
@@ -26,43 +29,43 @@ public class CustomNetworkManager : NetworkManager
 
 	public override void OnServerAddPlayer(NetworkConnectionToClient conn)
 	{
-		if (hasSessionStarted) 
-		{	
-			if (disconnectedPlayers.Count == 0)
-			{
-				NetworkServer.RemoveConnection(conn.connectionId);
-				return;
-			}
-			else 
-			{
-				GameObject player = Instantiate(playerPrefab);
-				NetworkServer.AddPlayerForConnection(conn, player);
+		//if (hasSessionStarted) 
+		//{
+		//	if (disconnectedPlayers.Count == 0)
+		//	{
+		//		NetworkServer.RemoveConnection(conn.connectionId);
+		//		return;
+		//	}
+		//	else 
+		//	{
+		//		GameObject player = Instantiate(playerPrefab);
+		//		NetworkServer.AddPlayerForConnection(conn, player);
 
-				ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID) - 1);
-				Debug.Log(id + ", " + players.Count + ", " + conn.connectionId + ", " + SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID));
-				foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
-				{
-					if (id == ele1.Key)
-					{
-						Debug.Log("Found disconnected player");
-						//PlayerController pcInstance = Instantiate(pcPrefab);
+		//		ulong id = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.currentLobbyID, SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID) - 1);
+		//		Debug.Log(id + ", " + players.Count + ", " + conn.connectionId + ", " + SteamMatchmaking.GetNumLobbyMembers((CSteamID)SteamLobby.instance.currentLobbyID));
+		//		foreach (KeyValuePair<ulong, GameObject> ele1 in disconnectedPlayers)
+		//		{
+		//			if (id == ele1.Key)
+		//			{
+		//				Debug.Log("Found disconnected player");
+		//				//PlayerController pcInstance = Instantiate(pcPrefab);
 
-						//pcInstance.Copy(ele1.Value.GetComponent<PlayerController>());
+		//				//pcInstance.Copy(ele1.Value.GetComponent<PlayerController>());
 
-						//Destroy(ele1.Value, 0.1f);
-						//disconnectedPlayers.Remove(ele1.Key);
-						//Destroy(player, 0.1f);
+		//				//Destroy(ele1.Value, 0.1f);
+		//				//disconnectedPlayers.Remove(ele1.Key);
+		//				//Destroy(player, 0.1f);
 
-						//connectedPlayers.Add(pcInstance.playerSteamID, pcInstance);
-						//NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
+		//				//connectedPlayers.Add(pcInstance.playerSteamID, pcInstance);
+		//				//NetworkServer.AddPlayerForConnection(conn, pcInstance.gameObject);
 
-						ReloadGame();
-						break;
-					}
-				}
-			}
-		}
-		else if (SceneManager.GetActiveScene().name == "Lobby")
+		//				ReloadGame();
+		//				break;
+		//			}
+		//		}
+		//	}
+		//}
+		/*else*/ if (SceneManager.GetActiveScene().name == "Lobby")
 		{
 			PlayerController pcInstance = Instantiate(pcPrefab);
 			pcInstance.connectID = conn.connectionId;
@@ -75,12 +78,10 @@ public class CustomNetworkManager : NetworkManager
 		}
 	}
 
-	[ClientCallback]
 	public void ReloadGame() 
 	{
 		foreach (PlayerController player in players) 
 		{
-			Debug.Log(player.playerSteamName + "update model");
 			player.GetComponent<PlayerDataForMap>().UpdatePlayerModel();
 		}
 	}
@@ -93,24 +94,21 @@ public class CustomNetworkManager : NetworkManager
 			{
 				if (ele1.Value.connectID == conn.connectionId)
 				{
-					if (hasSessionStarted)
-					{
-						Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
-						Debug.Log(ele1.Key.ToString() + " in loop");
-						if(!disconnectedPlayers.ContainsKey(ele1.Key))
-							disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
-						
-						connectedPlayers.Remove(ele1.Key);
-						players.Remove(ele1.Value);
-						NetworkServer.RemovePlayerForConnection(conn, false);
-						//ele1.Value.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
-						ele1.Value.gameObject.SetActive(false);
-					}
+					Debug.Log(ele1.Value.playerSteamName + " ID: " + ele1.Value.playerSteamID + " has disconnected!");
+					Debug.Log(ele1.Key.ToString() + " in loop");
+					//if(!disconnectedPlayers.ContainsKey(ele1.Key))
+					//	disconnectedPlayers.Add(ele1.Key, ele1.Value.gameObject);
+
+					connectedPlayers.Remove(ele1.Key);
+					players.Remove(ele1.Value);
+					NetworkServer.RemovePlayerForConnection(conn, false);
+					ele1.Value.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority();
+					Destroy(ele1.Value.gameObject);
 					break;
 				}
 			}
 		}
-		//base.OnServerDisconnect(conn);
+		base.OnServerDisconnect(conn);
 	}
 
 	public void StartGame(string sceneName) 

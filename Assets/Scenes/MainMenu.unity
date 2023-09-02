@@ -690,7 +690,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1479987682
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1185,14 +1185,14 @@ MonoBehaviour:
   sendRate: 30
   offlineScene: Assets/Scenes/MainMenu.unity
   onlineScene: Assets/Scenes/Lobby.unity
-  transport: {fileID: 0}
+  transport: {fileID: 2129178329}
   networkAddress: localhost
-  maxConnections: 4
+  maxConnections: 5
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 2178771232440466245, guid: 5be6766dd3feb24408669f3b03652b26,
     type: 3}
   autoCreatePlayer: 1
-  playerSpawnMethod: 0
+  playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 7013371904534171600, guid: 3c7a217e62fc1ef45be56d7ad2a5eaaf, type: 3}
   snapshotSettings:

@@ -14,7 +14,7 @@ public class PlayerDataForMap : NetworkBehaviour
     [SyncVar]
     public Vector3 playerBoardPos = Vector3.zero;
     [SyncVar]
-    public bool boardPosUpdate = false;
+    public bool notUpdate = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +25,11 @@ public class PlayerDataForMap : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (notUpdate && transform != null)
+        {
+            transform.position = playerBoardPos;
+            notUpdate = false;
+        }
         if (SceneManager.GetActiveScene().name.Contains("Map") && GetComponent<PlayerController>().ready) 
         {  
             if (!curMapName.Equals(SceneManager.GetActiveScene().name)) 
@@ -39,14 +44,15 @@ public class PlayerDataForMap : NetworkBehaviour
                 {
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);
-                    
                     UpdatePlayerModel();
-
-                    transform.GetComponentInChildren<BaseMapData>().SetPostion(GetComponent<PlayerController>().connectID);
-                    playerBoardPos = transform.position;
-                    boardPosUpdate = false;
-
-                   
+                    if (playerBoardPos != Vector3.zero && SceneManager.GetActiveScene().name.Contains("Board"))
+                    {
+                        notUpdate = true;
+                    }
+                    else 
+                    {
+                        transform.GetComponentInChildren<BaseMapData>().SetPostion(GetComponent<PlayerController>().connectID);
+                    }
                 }
                 else 
                 {
@@ -59,11 +65,6 @@ public class PlayerDataForMap : NetworkBehaviour
             {
                 transform.GetComponentInChildren<BaseMapData>().Movement();
             }
-        }
-        if (!boardPosUpdate) 
-        {
-            transform.position = playerBoardPos;
-            boardPosUpdate = true;
         }
     }
 

@@ -23,6 +23,9 @@ public class TestMapData : BaseMapData
 		transform.parent.transform.position += moveDir * speed;
 		transform.parent.transform.position = new Vector3(transform.parent.transform.position.x, 2, transform.parent.transform.position.z);
 
-		//transform.parent.GetComponent<PlayerDataForMap>().boardPosUpdate = false;
+		if (!transform.parent.GetComponent<PlayerDataForMap>().notUpdate)
+		{
+			transform.parent.GetComponent<PlayerDataForMap>().playerBoardPos = transform.parent.transform.position;
+		}
 	}
 }
