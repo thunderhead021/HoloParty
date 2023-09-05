@@ -43,7 +43,7 @@ public class Slap : NetworkBehaviour
         GetComponent<Animator>().SetBool("gone", true);
     }
 
-    [ClientRpc]
+
     public void TriggerReset() 
     {
         StartCoroutine(Reset());
