@@ -37,7 +37,6 @@ public class Slap : NetworkBehaviour
 		}
 	}
 
-    [ClientRpc]
     public void TriggerCall(float speed)
     {
         GetComponent<Animator>().SetFloat("speed", speed);
