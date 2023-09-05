@@ -63,7 +63,6 @@ public class SlapController : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
     private void Looping()
     {
         List<int> listOfSlaps = GenerateRandomNumbers(numberOfSlap);
