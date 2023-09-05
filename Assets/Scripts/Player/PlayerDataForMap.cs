@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
+using Mirror.Experimental;
 
 public class PlayerDataForMap : NetworkBehaviour
 {
@@ -37,6 +38,7 @@ public class PlayerDataForMap : NetworkBehaviour
                 if (transform.childCount > 1)
                 {
                     Destroy(transform.GetChild(1).gameObject);
+                    RemoveRB();
                 }
 
                 GameObject mapData = GameObject.FindGameObjectWithTag("MapData");
@@ -77,4 +79,44 @@ public class PlayerDataForMap : NetworkBehaviour
         playerModel.SetActive(true);
         
     }
+
+    public void AddRB(bool is2D) 
+    {
+        if (is2D)
+        {
+            gameObject.AddComponent<Rigidbody2D>();
+            gameObject.GetComponent<Rigidbody2D>().angularDrag = 0;
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+            gameObject.AddComponent<NetworkRigidbody2D>();
+        }
+        else 
+        {
+            gameObject.AddComponent<Rigidbody>();
+            gameObject.GetComponent<Rigidbody>().angularDrag = 0;
+            gameObject.GetComponent<Rigidbody>().useGravity = false;
+            gameObject.AddComponent<NetworkRigidbody>();
+        }
+    }
+
+    public void RemoveRB() 
+    {
+        Rigidbody2D rb2d = gameObject.GetComponent<Rigidbody2D>();
+        NetworkRigidbody2D nwrb2d = gameObject.GetComponent<NetworkRigidbody2D>();
+
+        Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+        NetworkRigidbody nwrb = gameObject.GetComponent<NetworkRigidbody>();
+
+        if (rb != null)
+        {
+            Destroy(rb);
+            Destroy(nwrb);
+        }
+        else if (rb2d != null) 
+        {
+            Destroy(rb2d);
+            Destroy(nwrb2d);
+        }
+
+    }
+
 }

@@ -41,7 +41,6 @@ GameObject:
   - component: {fileID: 3828087458154814802}
   - component: {fileID: 2154804171133297369}
   - component: {fileID: 2968367000736355062}
-  - component: {fileID: 8746087320461115492}
   - component: {fileID: 8401646718783858215}
   - component: {fileID: 1321755601146106957}
   m_Layer: 0
@@ -105,20 +104,6 @@ MonoBehaviour:
   ready: 0
   charID: 0
   charModel: {r: 0, g: 0, b: 0, a: 0}
---- !u!136 &8746087320461115492
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7013371904534171600}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8401646718783858215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +120,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerModel: {fileID: 6939614965087682557}
+  curMapName: 
+  playerBoardPos: {x: 0, y: 0, z: 0}
+  notUpdate: 0
 --- !u!114 &1321755601146106957
 MonoBehaviour:
   m_ObjectHideFlags: 0

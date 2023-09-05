@@ -22,7 +22,7 @@ public class TestCube : NetworkBehaviour
 	{
         if (col.gameObject.tag.Equals("Player"))
         {
-            ChangeColor(col.transform.GetComponent<PlayerController>().charID);
+            ChangeColor(col.gameObject.GetComponentInParent<PlayerController>().charID);
             SetColor();
         }
     }

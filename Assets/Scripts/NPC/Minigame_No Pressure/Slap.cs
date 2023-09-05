@@ -5,41 +5,21 @@ using UnityEngine;
 
 public class Slap : NetworkBehaviour
 {
-    private Rigidbody gravityControl;
+    [SyncVar]
+    public bool isPlatform;
 
     [ServerCallback]
-    private void OnTriggerEnter(Collider col)
-    {
-        if (col.gameObject.tag.Equals("Player"))
+    private void OnTriggerStay2D(Collider2D collision)
+	{
+        if (collision.gameObject.tag.Equals("Player"))
         {
-            PlayerOut(col.gameObject);
-        }
-        else if(col.gameObject.tag.Equals("Slap"))
-        {
-            Destroy(this);
+            Debug.Log("player in " + gameObject.name);
         }
     }
 
-    [ClientRpc]
+	[ClientRpc]
     private void PlayerOut(GameObject player)
     {
         Debug.Log("player out");
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        gravityControl = GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (transform.position.y < 0.03f)
-        {
-            gravityControl.useGravity = false;
-            gravityControl.angularDrag = 0;
-            transform.position = new Vector3(0, 0.03f, 0);
-        }
     }
 }

@@ -20,7 +20,8 @@ public abstract class BaseMapData : MonoBehaviour
         if (parent.transform.childCount > 1)
         {
             Debug.Log("remove model");
-            Destroy(parent.transform.GetChild(1).gameObject);
+            parent.transform.GetChild(1).transform.localPosition = Vector3.zero;
+            Destroy(parent.transform.GetChild(0).gameObject);
         }
     }
 }
