@@ -8,18 +8,51 @@ public class Slap : NetworkBehaviour
     [SyncVar]
     public bool isPlatform;
 
+    public Collider2D slapColider;
+
+    float resetTime = 1f;
+
     [ServerCallback]
-    private void OnTriggerStay2D(Collider2D collision)
-	{
-        if (collision.gameObject.tag.Equals("Player"))
+    public void PlayersOut()
+    {
+        if (isPlatform)
+            return;
+
+        // Get all the colliders2D inside this game object's collider
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, slapColider.bounds.size, 0);
+
+        foreach (Collider2D collider in colliders)
         {
-            Debug.Log("player in " + gameObject.name);
-        }
+			// Check if the collider belongs to a game object
+			GameObject model = collider.gameObject;
+
+			if (model != null && model.tag.Equals("Player"))
+			{
+				Debug.Log("Player out");
+                NoPressureMapData playerMapdata = (NoPressureMapData)model.GetComponentInParent<PlayerDataForMap>().GetMapData();
+                playerMapdata.canMove = false;
+                model.SetActive(false);
+
+            }
+		}
+	}
+
+    [ClientRpc]
+    public void TriggerCall(float speed)
+    {
+        GetComponent<Animator>().SetFloat("speed", speed);
+        GetComponent<Animator>().SetBool("gone", true);
     }
 
-	[ClientRpc]
-    private void PlayerOut(GameObject player)
+    [ClientRpc]
+    public void TriggerReset() 
     {
-        Debug.Log("player out");
+        StartCoroutine(Reset());
+    }
+
+    IEnumerator Reset() 
+    {
+        yield return new WaitForSecondsRealtime(resetTime);
+        GetComponent<Animator>().SetBool("gone", false);
     }
 }

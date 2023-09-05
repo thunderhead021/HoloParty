@@ -80,41 +80,46 @@ public class PlayerDataForMap : NetworkBehaviour
         
     }
 
+    public BaseMapData GetMapData() 
+    {
+        return transform.GetComponentInChildren<BaseMapData>();
+    }
+
     public void AddRB(bool is2D) 
     {
-        if (is2D)
-        {
-            gameObject.AddComponent<Rigidbody2D>();
-            gameObject.GetComponent<Rigidbody2D>().angularDrag = 0;
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-            gameObject.AddComponent<NetworkRigidbody2D>();
+		if (is2D)
+		{
+			gameObject.AddComponent<Rigidbody2D>();
+			gameObject.GetComponent<Rigidbody2D>().angularDrag = 0;
+			gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+            gameObject.GetComponent<NetworkRigidbody2D>().enabled = true;
+            gameObject.GetComponent<NetworkRigidbody2D>().target = gameObject.GetComponent<Rigidbody2D>();
         }
-        else 
-        {
-            gameObject.AddComponent<Rigidbody>();
-            gameObject.GetComponent<Rigidbody>().angularDrag = 0;
-            gameObject.GetComponent<Rigidbody>().useGravity = false;
-            gameObject.AddComponent<NetworkRigidbody>();
+		else
+		{
+			gameObject.AddComponent<Rigidbody>();
+			gameObject.GetComponent<Rigidbody>().angularDrag = 0;
+			gameObject.GetComponent<Rigidbody>().useGravity = false;
+            gameObject.GetComponent<NetworkRigidbody>().enabled = true;
+            gameObject.GetComponent<NetworkRigidbody>().target = gameObject.GetComponent<Rigidbody>();
         }
-    }
+	}
 
     public void RemoveRB() 
     {
         Rigidbody2D rb2d = gameObject.GetComponent<Rigidbody2D>();
-        NetworkRigidbody2D nwrb2d = gameObject.GetComponent<NetworkRigidbody2D>();
 
         Rigidbody rb = gameObject.GetComponent<Rigidbody>();
-        NetworkRigidbody nwrb = gameObject.GetComponent<NetworkRigidbody>();
 
         if (rb != null)
         {
             Destroy(rb);
-            Destroy(nwrb);
+            gameObject.GetComponent<NetworkRigidbody2D>().enabled = false;
         }
         else if (rb2d != null) 
         {
             Destroy(rb2d);
-            Destroy(nwrb2d);
+            gameObject.GetComponent<NetworkRigidbody>().enabled = false;
         }
 
     }

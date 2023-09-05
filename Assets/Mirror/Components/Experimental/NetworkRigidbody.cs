@@ -7,7 +7,7 @@ namespace Mirror.Experimental
     public class NetworkRigidbody : NetworkBehaviour
     {
         [Header("Settings")]
-        [SerializeField] internal Rigidbody target = null;
+        [SerializeField] public Rigidbody target = null;
 
         [Tooltip("Set to true if moves come from owner client, set to false if moves always come from server")]
         public bool clientAuthority = false;
