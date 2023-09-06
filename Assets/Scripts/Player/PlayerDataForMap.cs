@@ -16,6 +16,10 @@ public class PlayerDataForMap : NetworkBehaviour
     public Vector3 playerBoardPos = Vector3.zero;
     [SyncVar]
     public bool notUpdate = false;
+
+    [SyncVar]
+    public bool isLose = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -54,6 +58,8 @@ public class PlayerDataForMap : NetworkBehaviour
                     else 
                     {
                         transform.GetComponentInChildren<BaseMapData>().SetPostion(GetComponent<PlayerController>().connectID);
+                        Transform model = FindModel();
+                        model.localPosition = Vector3.zero;
                     }
                 }
                 else 
@@ -65,17 +71,34 @@ public class PlayerDataForMap : NetworkBehaviour
             }
             if (isOwned && haveMapData)
             {
-                transform.GetComponentInChildren<BaseMapData>().Movement();
+                if (!isLose)
+                    transform.GetComponentInChildren<BaseMapData>().Movement();
+                else if(isLose && FindModel() != null)
+                {
+                    Transform model = FindModel();
+                    model.gameObject.SetActive(false);
+
+                    RemoveRB();
+                }
             }
         }
     }
 
+    Transform FindModel()
+    {
+        foreach (Transform t in GetComponentsInChildren<Transform>())
+        {
+            if (t.CompareTag("Player")) return t;
+        }
+        return null;
+    }
 
     public void UpdatePlayerModel() 
     {
         transform.GetComponentInChildren<BaseMapData>().SetMapModel(GetComponent<PlayerController>().charID, transform.GetChild(0).gameObject);
         curMapName = SceneManager.GetActiveScene().name;
         haveMapData = true;
+        isLose = false;
         playerModel.SetActive(true);
         
     }
@@ -114,12 +137,12 @@ public class PlayerDataForMap : NetworkBehaviour
         if (rb != null)
         {
             Destroy(rb);
-            gameObject.GetComponent<NetworkRigidbody2D>().enabled = false;
+            gameObject.GetComponent<NetworkRigidbody>().enabled = false;
         }
         else if (rb2d != null) 
         {
             Destroy(rb2d);
-            gameObject.GetComponent<NetworkRigidbody>().enabled = false;
+            gameObject.GetComponent<NetworkRigidbody2D>().enabled = false;
         }
 
     }

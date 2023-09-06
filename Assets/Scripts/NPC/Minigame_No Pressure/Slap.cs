@@ -12,29 +12,42 @@ public class Slap : NetworkBehaviour
 
     float resetTime = 1f;
 
+    private readonly SyncList<GameObject> players = new SyncList<GameObject>();
+
     [ServerCallback]
+    private void OnTriggerEnter2D(Collider2D collision)
+	{
+        if (collision.gameObject.tag.Equals("Player"))
+        {
+            Debug.Log("Player currently in " + name);
+            players.Add(collision.gameObject);
+        }
+            
+
+    }
+
+    [ServerCallback]
+    private void OnTriggerExit2D(Collider2D collision)
+	{
+        if (collision.gameObject.tag.Equals("Player"))
+        {
+            Debug.Log("Player is out of " + name);
+            players.Remove(collision.gameObject);
+        }
+            
+    }
+
+	[ServerCallback]
     public void PlayersOut()
     {
         if (isPlatform)
             return;
 
-        // Get all the colliders2D inside this game object's collider
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, slapColider.bounds.size, 0);
-
-        foreach (Collider2D collider in colliders)
+        foreach (GameObject player in players)
         {
-			// Check if the collider belongs to a game object
-			GameObject model = collider.gameObject;
-
-			if (model != null && model.tag.Equals("Player"))
-			{
-				Debug.Log("Player out");
-                NoPressureMapData playerMapdata = (NoPressureMapData)model.GetComponentInParent<PlayerDataForMap>().GetMapData();
-                playerMapdata.canMove = false;
-                model.SetActive(false);
-
-            }
-		}
+            Debug.Log("Player out from " + name);
+            player.GetComponentInParent<PlayerDataForMap>().isLose = true;
+        }
 	}
 
     public void TriggerCall(float speed)

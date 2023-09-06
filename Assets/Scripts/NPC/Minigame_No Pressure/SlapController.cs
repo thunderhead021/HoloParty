@@ -40,6 +40,7 @@ public class SlapController : NetworkBehaviour
     {
         while (true)
         {
+            yield return new WaitUntil(() => allFinished() == true);
             yield return new WaitForSeconds(currentInterval);
 
             Looping();
@@ -61,6 +62,16 @@ public class SlapController : NetworkBehaviour
                 numberOfSlap = Mathf.Min(numberOfSlap, 5);
             }
         }
+    }
+
+    private bool allFinished() 
+    {
+        foreach (Slap slap in _animators)
+        {
+            if (!slap.isPlatform)
+                return false;
+        }
+        return true;
     }
 
     private void Looping()

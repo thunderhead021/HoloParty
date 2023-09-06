@@ -5,7 +5,6 @@ using UnityEngine;
 public class NoPressureMapData : BaseMapData
 {
 	public List<Vector2> spawnPos;
-	public bool canMove = true;
 
 	public override void SetPostion(int startPos)
 	{
@@ -15,16 +14,13 @@ public class NoPressureMapData : BaseMapData
 
 	public override void Movement()
 	{
-		if (canMove) 
-		{
-			float xDir = Input.GetAxis("Horizontal");
-			float yDir = Input.GetAxis("Vertical");
+		float xDir = Input.GetAxis("Horizontal");
+		float yDir = Input.GetAxis("Vertical");
 
-			Vector3 moveDir = new Vector2(xDir, yDir);
+		Vector3 moveDir = new Vector2(xDir, yDir);
 
-			transform.parent.transform.position += moveDir * speed;
+		transform.parent.transform.position += moveDir * speed;
 
-			transform.parent.transform.position = new Vector2(Mathf.Clamp(transform.parent.transform.position.x, -4.5f, 4.5f), Mathf.Clamp(transform.parent.transform.position.y, -3.5f, 3.5f));
-		}
+		transform.parent.transform.position = new Vector2(Mathf.Clamp(transform.parent.transform.position.x, -4.5f, 4.5f), Mathf.Clamp(transform.parent.transform.position.y, -3.5f, 3.5f));
 	}
 }
