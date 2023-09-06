@@ -64,6 +64,7 @@ public class SlapController : NetworkBehaviour
         }
     }
 
+    [ServerCallback]
     private bool allFinished() 
     {
         foreach (Slap slap in _animators)
