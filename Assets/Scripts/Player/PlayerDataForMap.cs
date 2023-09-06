@@ -73,13 +73,13 @@ public class PlayerDataForMap : NetworkBehaviour
             {
                 if (!isLose)
                     transform.GetComponentInChildren<BaseMapData>().Movement();
-                else if(isLose && FindModel() != null)
-                {
-                    Transform model = FindModel();
-                    model.gameObject.SetActive(false);
+            }
+            if (isLose && FindModel() != null)
+            {
+                Transform model = FindModel();
+                model.gameObject.SetActive(false);
 
-                    RemoveRB();
-                }
+                RemoveRB();
             }
         }
     }
