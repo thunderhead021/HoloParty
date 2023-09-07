@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using Steamworks;
 using UnityEngine.UI;
+using System;
 
 public class SteamLobby : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class SteamLobby : MonoBehaviour
 	protected Callback<GameLobbyJoinRequested_t> lobbyJoinRequest;
 	protected Callback<LobbyEnter_t> lobbyEnter;
 
+	[HideInInspector]
+	public bool finishFindLobby = false;
 	protected Callback<LobbyMatchList_t> lobbyList;
 	protected Callback<LobbyDataUpdate_t> lobbyDataUpdate;
 	List<CSteamID> lobbyIDs = new List<CSteamID>();
@@ -22,6 +25,9 @@ public class SteamLobby : MonoBehaviour
 	public ulong currentLobbyID;
 	private const string hostAddressKey = "HostAddress";
 	private CustomNetworkManager networkManager;
+
+	[HideInInspector]
+	public bool finishStart = false;
 
 	private void Start()
 	{
@@ -34,7 +40,21 @@ public class SteamLobby : MonoBehaviour
 		lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
 
 		lobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbyList);
+		Debug.Log("Avaliable lobbies: " + lobbyIDs.Count);
 		lobbyDataUpdate = Callback<LobbyDataUpdate_t>.Create(OnGetLobbyData);
+		finishStart = true;
+	}
+
+	public bool CanReconnet() 
+	{
+		if (PlayerPrefs.HasKey("currentLobbyID") == false)
+			return false;
+		//CSteamID curlobbyID = new CSteamID(Convert.ToUInt64(PlayerPrefs.GetString("currentLobbyID")));
+		//Debug.Log(curlobbyID + ", " + SteamMatchmaking.GetNumLobbyMembers(curlobbyID));
+		//if (SteamMatchmaking.JoinLobby(curlobbyID) > 0)
+		return true;
+		//Debug.Log("Game is ended/Lobby not exist");
+		
 	}
 
 	private void OnLobbyCreated(LobbyCreated_t lobbyCreated_T)
@@ -66,8 +86,8 @@ public class SteamLobby : MonoBehaviour
 	private void OnLobbyEnter(LobbyEnter_t lobbyEnter_T) 
 	{
 		currentLobbyID = lobbyEnter_T.m_ulSteamIDLobby;
-
-
+		PlayerPrefs.SetString("currentLobbyID", currentLobbyID.ToString());
+		PlayerPrefs.Save();
 		//Client
 		if (NetworkServer.active) { return; }
 
@@ -79,12 +99,16 @@ public class SteamLobby : MonoBehaviour
 
 	private void OnGetLobbyList(LobbyMatchList_t lobbyMatchList) 
 	{
+		if (lobbyIDs.Count > 0)
+			lobbyIDs.Clear();
 		for (int i = 0; i < lobbyMatchList.m_nLobbiesMatching; i++) 
 		{
 			CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);
 			lobbyIDs.Add(lobbyID);
 			SteamMatchmaking.RequestLobbyData(lobbyID);
 		}
+		Debug.Log("3 " + lobbyIDs.Count);
+		finishFindLobby = true;
 	}
 
 	private void OnGetLobbyData(LobbyDataUpdate_t lobbyData) 
@@ -96,16 +120,25 @@ public class SteamLobby : MonoBehaviour
 	{
 		if (lobbyIDs.Count > 0)
 			lobbyIDs.Clear();
-
 		SteamMatchmaking.AddRequestLobbyListResultCountFilter(60);
 		SteamMatchmaking.RequestLobbyList();
+		finishFindLobby = false;
+		Debug.Log("1 "+ lobbyIDs.Count);
 	}
 
 	public void FindMatchBtnClick() 
 	{
+		StartCoroutine(FindMatch());	
+	}
+
+	IEnumerator FindMatch() 
+	{
 		GetLobbies();
+		yield return new WaitWhile(() => finishFindLobby == false);
 		if (lobbyIDs.Count > 0)
-			SteamMatchmaking.JoinLobby(lobbyIDs[Random.Range(0, lobbyIDs.Count)]);
+		{
+			SteamMatchmaking.JoinLobby(lobbyIDs[UnityEngine.Random.Range(0, lobbyIDs.Count)]);
+		}
 		else
 			OnHostBtnClick();
 	}

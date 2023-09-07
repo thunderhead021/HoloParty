@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Mirror;
+﻿using Mirror;
 using Steamworks;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -18,7 +17,7 @@ public class PlayerController : NetworkBehaviour
     [SyncVar(hook = nameof(playerReadyUpdate))] public bool ready;
 
     //Character data
-    [SyncVar(hook = nameof(playerCharID))] public int charID = 0;
+    [SyncVar(hook = nameof(playerCharID))] public int charID = -1;
     [SyncVar(hook = nameof(playerCharModel))] public Color charModel;
 
     private CustomNetworkManager networkManager;
@@ -27,6 +26,19 @@ public class PlayerController : NetworkBehaviour
 	{
         DontDestroyOnLoad(gameObject);
 	}
+
+    public void Copy(PlayerController playerController, ulong id) 
+    {
+        transform.position = playerController.transform.position;
+
+        connectID = playerController.connectID;
+        playerIDnumber = networkManager.players.Count + 1;
+        playerSteamID = id;
+        
+        charID = playerController.charID;
+        charModel = playerController.charModel;
+        ready = playerController.ready;
+    }
 
 	private CustomNetworkManager CustomNetworkManager 
     {
@@ -42,22 +54,35 @@ public class PlayerController : NetworkBehaviour
 	{
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
         gameObject.name = "LocalPlayer";
-        LobbyManager.instance.FindLocalPlayer();
-        LobbyManager.instance.UpdateLobbyName();
-
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyManager.instance.FindLocalPlayer();
+            LobbyManager.instance.UpdateLobbyName();
+        }
     }
 
 	public override void OnStartClient()
 	{
         CustomNetworkManager.players.Add(this);
-        LobbyManager.instance.UpdateLobbyName();
-        LobbyManager.instance.UpdatePlayerList();
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyManager.instance.UpdateLobbyName();
+            LobbyManager.instance.UpdatePlayerList();
+        }
+        else if (networkManager.hasSessionStarted) 
+        {
+            //LobbyManager.instance.UpdatePlayerInfo();
+        }
+       
     }
 
 	public override void OnStopClient()
 	{
         CustomNetworkManager.players.Remove(this);
-        LobbyManager.instance.UpdatePlayerList();
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyManager.instance.UpdatePlayerList();
+        }
     }
 
     [Command]
@@ -110,6 +135,8 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdUpdatePlayerChar(int value, Color model) 
     {
+        if (ready == true)
+            return;
         playerCharID(charID, value);
         playerCharModel(charModel, model);
         LobbyManager.instance.UpdatePlayerList();
@@ -126,6 +153,7 @@ public class PlayerController : NetworkBehaviour
     private void ClientCharModelUpdate(Color model)
     {
         charModel = model;
+        LobbyManager.instance.UpdatePlayerList();
     }
 
     public void playerCharID(int oldVal, int newVal) 
@@ -139,6 +167,7 @@ public class PlayerController : NetworkBehaviour
     private void ClientCharIDUpdate(int id) 
     {
         charID = id;
+        LobbyManager.instance.UpdatePlayerList();
     }
 
     public void ChangeCharSelected(int id, Color model)

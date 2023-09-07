@@ -6,15 +6,30 @@ using UnityEngine;
 public class TestCube : NetworkBehaviour
 {
     public Material[] testColor;
+    
     public MeshRenderer mesh;
+
+    [SyncVar]
+    public int curColorID;
+
+    private void ChangeColor(int colorID) 
+    {
+        curColorID = colorID;  
+    }
 
     [ServerCallback]
     private void OnTriggerEnter(Collider col)
 	{
-        Debug.Log("Hit");
         if (col.gameObject.tag.Equals("Player"))
         {
-            mesh.material = testColor[col.transform.GetComponent<PlayerController>().charID];
+            ChangeColor(col.gameObject.GetComponentInParent<PlayerController>().charID);
+            SetColor();
         }
+    }
+
+    [ClientRpc]
+    private void SetColor() 
+    {
+        mesh.material = testColor[curColorID];
     }
 }
