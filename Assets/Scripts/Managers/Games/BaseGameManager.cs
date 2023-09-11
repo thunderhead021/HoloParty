@@ -1,139 +1,143 @@
 ﻿using Mirror;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class BaseGameManager : MonoBehaviour
+public class BaseGameManager : NetworkBehaviour
 {
-    public Button startButton;
-    public TextMeshProUGUI timerText;
-    public TextMeshProUGUI countdownText;
+    public GameObject countdown;
+    public GameObject finish;
+    public GameObject playerList;
+    public GameObject playerCardPrefab;
 
-    private double timerStart;
-    private double countdownStart;
-    private bool timerRunning = false;
-    private bool counting = false;
+    internal CustomNetworkManager networkManager;
 
-    private double defaultMinigameTime = 180;
-
+    [HideInInspector]
     public enum GameState
     {
-        preparing = 0,
+        demo = 0,
         countingDown = 1,
         playing = 2,
         finished = 3,
     }
+
+    [SyncVar]
     public GameState state;
 
-    public virtual void Start()
-    {
-        timerText.enabled = false;
-        countdownText.enabled = false;
-        state = GameState.preparing;
-    }
+    [SyncVar]
+    private bool finishedCountdown = false;
 
-    private void Update()
+    [SyncVar]
+    [HideInInspector]
+    public bool gameStart = false;
+
+    [SyncVar]
+    PlayerController winner;
+
+    public SyncList<GameObject> cardList = new SyncList<GameObject>();
+
+    internal CustomNetworkManager CustomNetworkManager
     {
-        switch (state)
+        get
         {
-            case GameState.preparing:
-                PreparingLoop();
-                break;
-            case GameState.countingDown:
-                CountdownLoop();
-                break;
-            case GameState.playing:
-                GameLoop();
-                break;
-            case GameState.finished:
-                FinishedLoop();
-                break;
+            if (networkManager != null)
+                return networkManager;
+            return networkManager = NetworkManager.singleton as CustomNetworkManager;
         }
     }
 
-    public virtual void StartGame()
-    {
-        startButton.enabled = false;
-        countdownText.enabled = true;
-        state = GameState.countingDown;
-        countdownStart = NetworkTime.time;
+	private void Start()
+	{
+        countdown.SetActive(false);
+        finish.SetActive(false);
+        playerList.SetActive(false);
+    }
+
+	private void FixedUpdate()
+	{
+        switch (state)
+        {
+            case GameState.demo:
+                ShowDemo();
+                break;
+            case GameState.countingDown:
+                Countdown();
+                break;
+			case GameState.playing:
+				if (GameIsEnded())
+					state = GameState.finished;
+				break;
+			case GameState.finished:
+				ShowGameResult();
+				break;
+		}
     }
 
     /// <summary>
     /// For executing before the minigame starts
     /// </summary>
-    public virtual void PreparingLoop() { }
+    public virtual void ShowDemo() 
+    {
+        Debug.Log("Demo");
+        state = GameState.countingDown;
+    }
 
     /// <summary>
     /// For executing the countdown to start the minigame.
     /// </summary>
-    public virtual void CountdownLoop() {
-        if (!counting)
-        {
-            StartCoroutine(StartCountdown(3));
-        }
-        //// In case coroutines are not network-safe
-        //double countdown = 3.5 - (NetworkTime.time - countdownStart);
-        //countdownText.text = countdown.ToString("N0");
+    public virtual void Countdown() {
+        if (finishedCountdown)
+            return;
 
-        //if (countdown < 0.5)
-        //{
-        //    state = GameState.playing;
-        //    countdownText.text = "START";
-        //}
+        Debug.Log(CustomNetworkManager.players.Count);
+        foreach (PlayerController player in CustomNetworkManager.players)
+        {
+			GameObject playerCard = Instantiate(playerCardPrefab);
+			PlayerCharacterMinigameCard newPlayerInfo = playerCard.GetComponent<PlayerCharacterMinigameCard>();
+
+			newPlayerInfo.SetCharImage(player.charID, player.connectID);
+			playerCard.transform.SetParent(playerList.transform);
+            playerCard.transform.localScale = Vector3.one;
+
+            cardList.Add(playerCard);
+            Debug.Log("Add player card");
+        }
+        playerList.SetActive(true);
+        countdown.SetActive(true);
+        Debug.Log("Countdown");
+        finishedCountdown = true;
     }
 
     /// <summary>
     /// For executing the minigame's core gameplay loop.
     /// </summary>
-    public virtual void GameLoop()
+    public virtual bool GameIsEnded()
     {
-        timerText.enabled = true;
-        if (!timerRunning)
+        return true;
+    }
+
+    internal bool LastManStandingMinigameTypeWinCondition() 
+    {
+        foreach (PlayerController player in CustomNetworkManager.players)
         {
-            timerStart = NetworkTime.time;
-            StartCoroutine(StartTimer(defaultMinigameTime));
+            if (!player.gameObject.GetComponent<PlayerDataForMap>().isLose)
+            {
+                if (winner != null)
+                {
+                    winner = null;
+                    return false;
+                }
+                else
+                    winner = player;
+            }
         }
+        return true;
     }
 
     /// <summary>
     /// For executing after the minigame finishes
     /// </summary>
-    public virtual void FinishedLoop() { }
-
-    public IEnumerator StartCountdown(double countdownMax)
+    public virtual void ShowGameResult() 
     {
-        counting = true;
-        double countdown = countdownMax;
-        while (countdown > 0.5)
-        {
-            countdown = countdownMax - (NetworkTime.time - countdownStart);
-            countdownText.text = countdown.ToString("N0");
-            yield return null;
-        }
-
-        // After countdown finishes
-        countdownText.text = "Start";
-        yield return new WaitForSeconds(1);
-        state = GameState.playing;
-        countdownText.enabled = false;
-        counting = false;
-    }
-
-    public virtual IEnumerator StartTimer(double timerMax)
-    {
-        timerRunning = true;
-        double timer = timerMax;
-        while (timer > 0)
-        {
-            timer = timerMax - (NetworkTime.time - timerStart);
-            timerText.text = timer.ToString("N2");
-            yield return null;
-        }
-
-        state = GameState.finished;
-        timerRunning = false;
+        Debug.Log("End");
+        finish.SetActive(true);
     }
 }

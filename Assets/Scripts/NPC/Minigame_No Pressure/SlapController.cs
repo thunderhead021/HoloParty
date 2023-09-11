@@ -28,6 +28,7 @@ public class SlapController : NetworkBehaviour
     [SyncVar]
     private List<Slap> _animators = new List<Slap>();
 
+    public BaseGameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,8 +39,10 @@ public class SlapController : NetworkBehaviour
 
     private IEnumerator CallFunctionInterval()
     {
-        while (true)
+        yield return new WaitUntil(() => gameManager.state == BaseGameManager.GameState.playing);
+        while (gameManager.state == BaseGameManager.GameState.playing)
         {
+            
             yield return new WaitUntil(() => allFinished() == true);
             yield return new WaitForSeconds(currentInterval);
 

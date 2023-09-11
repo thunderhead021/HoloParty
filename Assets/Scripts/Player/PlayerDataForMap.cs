@@ -20,6 +20,21 @@ public class PlayerDataForMap : NetworkBehaviour
     [SyncVar]
     public bool isLose = false;
 
+    [SyncVar]
+    public bool canMove = true;
+    private BaseGameManager gameManager;
+
+    private CustomNetworkManager networkManager;
+    private CustomNetworkManager CustomNetworkManager
+    {
+        get
+        {
+            if (networkManager != null)
+                return networkManager;
+            return networkManager = NetworkManager.singleton as CustomNetworkManager;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,6 +63,7 @@ public class PlayerDataForMap : NetworkBehaviour
                 GameObject mapData = GameObject.FindGameObjectWithTag("MapData");
                 if (mapData != null && mapData.transform.root == mapData.transform && GetComponent<PlayerController>().charID >= 0)
                 {
+                    gameManager = GameObject.FindGameObjectWithTag("GameManager")?.GetComponent<BaseGameManager>();
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);
                     UpdatePlayerModel();
@@ -71,14 +87,26 @@ public class PlayerDataForMap : NetworkBehaviour
             }
             if (isOwned && haveMapData)
             {
-                if (!isLose)
-                    transform.GetComponentInChildren<BaseMapData>().Movement();
+                if (!isLose && canMove)
+                {
+                    if (gameManager?.gameStart ?? true)
+                    {
+                        transform.GetComponentInChildren<BaseMapData>()?.Movement();
+                    }
+                }
+                    
             }
             if (isLose && FindModel() != null)
             {
                 Transform model = FindModel();
                 model.gameObject.SetActive(false);
-
+                foreach (GameObject card in gameManager.cardList) 
+                {
+                    if (card.GetComponent<PlayerCharacterMinigameCard>().playerId == GetComponent<PlayerController>().connectID) 
+                    {
+                        card.GetComponent<PlayerCharacterMinigameCard>().SetPlactment(CustomNetworkManager.PlayerStanding(GetComponent<PlayerController>()));
+                    }
+                }
                 RemoveRB();
             }
         }

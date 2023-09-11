@@ -6,6 +6,7 @@ TagManager:
   tags:
   - MapData
   - Slap
+  - GameManager
   layers:
   - Default
   - TransparentFX

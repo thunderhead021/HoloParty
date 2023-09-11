@@ -14,6 +14,8 @@ public class CustomNetworkManager : NetworkManager
 	public bool hasSessionStarted = false;
 	[SerializeField]
 	private string curScene;
+
+	public string curBoard;
 	public List<PlayerController> players { get; } = new List<PlayerController>();
 
 	//private Dictionary<ulong, GameObject> disconnectedPlayers { get; } = new Dictionary<ulong, GameObject>();
@@ -21,6 +23,20 @@ public class CustomNetworkManager : NetworkManager
 
 	//public delegate void PlayerReconnectedDelegate(NetworkConnection connection);
 	//public static event PlayerReconnectedDelegate OnPlayerReconnected;
+
+	public int PlayerStanding(PlayerController player) 
+	{
+		int standing = players.Count;
+		foreach (PlayerController playerController in players) 
+		{
+			if (playerController != player && playerController.gameObject.GetComponent<PlayerDataForMap>().isLose)
+				standing -= 1;
+		}
+
+		standing = Mathf.Max(1, standing);
+
+		return standing;
+	}
 
 	public override void Start()
 	{
@@ -115,6 +131,8 @@ public class CustomNetworkManager : NetworkManager
 	{
 		ServerChangeScene(sceneName);
 		curScene = sceneName;
+		if (sceneName.Contains("Board"))
+			curBoard = sceneName;
 		hasSessionStarted = true;
 	}
 }
