@@ -128,7 +128,7 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing the minigame's core gameplay loop.
     /// </summary>
-    [ClientRpc]
+    [ServerCallback]
     public virtual bool GameIsEnded()
     {
         return true;
