@@ -1,5 +1,14 @@
 ﻿using Mirror;
+using System.Collections.Generic;
 using UnityEngine;
+
+public class ValueComparer : IComparer<GameObject>
+{
+    public int Compare(GameObject x, GameObject y)
+    {
+        return x.GetComponent<PlayerCharacterMinigameCard>().playerId.CompareTo(y.GetComponent<PlayerCharacterMinigameCard>().playerId);
+    }
+}
 
 public class BaseGameManager : NetworkBehaviour
 {
@@ -49,21 +58,22 @@ public class BaseGameManager : NetworkBehaviour
         countdown.SetActive(false);
         finish.SetActive(false);
         playerList.SetActive(false);
+        state = GameState.demo;
     }
 
 	private void FixedUpdate()
 	{
         switch (state)
         {
-            case GameState.demo:
-                ShowDemo();
-                break;
             case GameState.countingDown:
                 Countdown();
                 break;
 			case GameState.playing:
-				if (GameIsEnded())
-					state = GameState.finished;
+                if (GameIsEnded())
+                {
+                    finishedCountdown = false;
+                    state = GameState.finished;
+                }
 				break;
 			case GameState.finished:
 				ShowGameResult();
@@ -74,7 +84,7 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing before the minigame starts
     /// </summary>
-    public virtual void ShowDemo() 
+    public virtual void EndDemo() 
     {
         Debug.Log("Demo");
         state = GameState.countingDown;
@@ -84,17 +94,22 @@ public class BaseGameManager : NetworkBehaviour
     /// For executing the countdown to start the minigame.
     /// </summary>
     public virtual void Countdown() {
+        
+    }
+
+    internal void CountdownWithPlayerCards() 
+    {
         if (finishedCountdown)
             return;
 
         Debug.Log(CustomNetworkManager.players.Count);
         foreach (PlayerController player in CustomNetworkManager.players)
         {
-			GameObject playerCard = Instantiate(playerCardPrefab);
-			PlayerCharacterMinigameCard newPlayerInfo = playerCard.GetComponent<PlayerCharacterMinigameCard>();
+            GameObject playerCard = Instantiate(playerCardPrefab);
+            PlayerCharacterMinigameCard newPlayerInfo = playerCard.GetComponent<PlayerCharacterMinigameCard>();
 
-			newPlayerInfo.SetCharImage(player.charID, player.connectID);
-			playerCard.transform.SetParent(playerList.transform);
+            newPlayerInfo.SetCharImage(player.charID, player.connectID);
+            playerCard.transform.SetParent(playerList.transform);
             playerCard.transform.localScale = Vector3.one;
 
             cardList.Add(playerCard);
@@ -129,6 +144,7 @@ public class BaseGameManager : NetworkBehaviour
                     winner = player;
             }
         }
+        winner.gameObject.GetComponent<PlayerDataForMap>().SetPlacement();
         return true;
     }
 
@@ -137,7 +153,25 @@ public class BaseGameManager : NetworkBehaviour
     /// </summary>
     public virtual void ShowGameResult() 
     {
+        if (finishedCountdown)
+            return;
+
+        //get the player in the order of 1st -> last
+        List<GameObject> tmpList = new List<GameObject>();
+        foreach (GameObject card in cardList) 
+        {
+            tmpList.Add(card);
+        }
+        tmpList.Sort(new ValueComparer());
+        cardList.Clear();
+        foreach (GameObject card in tmpList)
+        {
+            cardList.Add(card);
+        }
+
+
         Debug.Log("End");
         finish.SetActive(true);
+        finishedCountdown = true;
     }
 }

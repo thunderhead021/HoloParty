@@ -1,7 +1,11 @@
 ﻿public class NoPressureGameManager : BaseGameManager
 {
-    
-    public override bool GameIsEnded()
+	public override void Countdown()
+	{
+		CountdownWithPlayerCards();
+	}
+
+	public override bool GameIsEnded()
     {
         return LastManStandingMinigameTypeWinCondition() /*false*/;
     }

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Start_EndAnimationControll : MonoBehaviour
 {
+    public GameObject placementCardPrefab;
+    public GameObject playerList;
+
 	private CustomNetworkManager networkManager;
     private BaseGameManager gameManager;
 
@@ -29,6 +32,20 @@ public class Start_EndAnimationControll : MonoBehaviour
         foreach (PlayerController player in CustomNetworkManager.players)
         {
             player.gameObject.GetComponent<PlayerDataForMap>().canMove = canMove;
+        }
+    }
+
+    public void CreatePlacementCards() 
+    {
+        foreach (GameObject card in gameManager.cardList) 
+        {
+            GameObject playerplacementCard = Instantiate(placementCardPrefab);
+            MinigameFinishPlacemtnCard playerplacementCardInfo = playerplacementCard.GetComponent<MinigameFinishPlacemtnCard>();
+            string placement = card.GetComponent<PlayerCharacterMinigameCard>().placement.text;
+            playerplacementCardInfo.SetPlacement(placement);
+
+            playerplacementCard.transform.SetParent(playerList.transform);
+            playerplacementCard.transform.localScale = Vector3.one;
         }
     }
 

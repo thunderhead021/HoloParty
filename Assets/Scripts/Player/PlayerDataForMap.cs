@@ -100,14 +100,19 @@ public class PlayerDataForMap : NetworkBehaviour
             {
                 Transform model = FindModel();
                 model.gameObject.SetActive(false);
-                foreach (GameObject card in gameManager.cardList) 
-                {
-                    if (card.GetComponent<PlayerCharacterMinigameCard>().playerId == GetComponent<PlayerController>().connectID) 
-                    {
-                        card.GetComponent<PlayerCharacterMinigameCard>().SetPlactment(CustomNetworkManager.PlayerStanding(GetComponent<PlayerController>()));
-                    }
-                }
+                SetPlacement();
                 RemoveRB();
+            }
+        }
+    }
+
+    public void SetPlacement() 
+    {
+        foreach (GameObject card in gameManager.cardList)
+        {
+            if (card.GetComponent<PlayerCharacterMinigameCard>().playerId == GetComponent<PlayerController>().connectID)
+            {
+                card.GetComponent<PlayerCharacterMinigameCard>().SetPlactment(CustomNetworkManager.PlayerStanding(GetComponent<PlayerController>()));
             }
         }
     }
