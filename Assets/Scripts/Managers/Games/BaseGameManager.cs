@@ -84,7 +84,7 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing before the minigame starts
     /// </summary>
-    [ServerCallback]
+    [ClientRpc]
     public virtual void EndDemo() 
     {
         Debug.Log("Demo");
@@ -94,11 +94,13 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing the countdown to start the minigame.
     /// </summary>
-    [ServerCallback]
+    [ClientRpc]
     public virtual void Countdown() {
         
     }
 
+
+    [ClientRpc]
     internal void CountdownWithPlayerCards() 
     {
         if (finishedCountdown)
@@ -126,7 +128,7 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing the minigame's core gameplay loop.
     /// </summary>
-    [ServerCallback]
+    [ClientRpc]
     public virtual bool GameIsEnded()
     {
         return true;
@@ -155,7 +157,7 @@ public class BaseGameManager : NetworkBehaviour
     /// For executing after the minigame finishes
     /// </summary>
     /// 
-    [ServerCallback]
+    [ClientRpc]
     public virtual void ShowGameResult() 
     {
         if (finishedCountdown)
