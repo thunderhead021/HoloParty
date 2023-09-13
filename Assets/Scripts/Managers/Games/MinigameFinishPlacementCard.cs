@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MinigameFinishPlacemtnCard : MonoBehaviour
+public class MinigameFinishPlacementCard : MonoBehaviour
 {
     public Text placement;
 

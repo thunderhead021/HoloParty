@@ -15,6 +15,7 @@ public class BaseGameManager : NetworkBehaviour
     public GameObject countdown;
     public GameObject finish;
     public GameObject playerList;
+    public List<PlayerCharacterMinigameCard> allCard = new List<PlayerCharacterMinigameCard>();
     public GameObject playerCardPrefab;
 
     internal CustomNetworkManager networkManager;
@@ -39,9 +40,13 @@ public class BaseGameManager : NetworkBehaviour
     public bool gameStart = false;
 
     [SyncVar]
+    [HideInInspector]
+    public bool gameEnd = false;
+
+    [SyncVar]
     PlayerController winner;
 
-    public SyncList<GameObject> cardList = new SyncList<GameObject>();
+    public readonly SyncList<GameObject> cardList = new SyncList<GameObject>();
 
     internal CustomNetworkManager CustomNetworkManager
     {
@@ -69,7 +74,7 @@ public class BaseGameManager : NetworkBehaviour
                 Countdown();
                 break;
 			case GameState.playing:
-                if (GameIsEnded())
+                if (gameEnd)
                 {
                     finishedCountdown = false;
                     state = GameState.finished;
@@ -84,7 +89,7 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing before the minigame starts
     /// </summary>
-    [ClientRpc]
+    [ServerCallback]
     public virtual void EndDemo() 
     {
         Debug.Log("Demo");
@@ -94,7 +99,7 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing the countdown to start the minigame.
     /// </summary>
-    [ClientRpc]
+    [ServerCallback]
     public virtual void Countdown() {
         
     }
@@ -106,20 +111,13 @@ public class BaseGameManager : NetworkBehaviour
         if (finishedCountdown)
             return;
 
-        Debug.Log(CustomNetworkManager.players.Count);
-        foreach (PlayerController player in CustomNetworkManager.players)
-        {
-            GameObject playerCard = Instantiate(playerCardPrefab);
-            PlayerCharacterMinigameCard newPlayerInfo = playerCard.GetComponent<PlayerCharacterMinigameCard>();
-
-            newPlayerInfo.SetCharImage(player.charID, player.connectID);
-            playerCard.transform.SetParent(playerList.transform);
-            playerCard.transform.localScale = Vector3.one;
-
-            cardList.Add(playerCard);
-            Debug.Log("Add player card");
-        }
         playerList.SetActive(true);
+        for (int i = 0; i < CustomNetworkManager.players.Count; i++) 
+        {
+            PlayerController player = CustomNetworkManager.players[i];
+            allCard[i].SetCharImage(player.charID, player.connectID);
+            allCard[i].gameObject.SetActive(true);
+        }
         countdown.SetActive(true);
         Debug.Log("Countdown");
         finishedCountdown = true;
@@ -129,12 +127,10 @@ public class BaseGameManager : NetworkBehaviour
     /// For executing the minigame's core gameplay loop.
     /// </summary>
     [ServerCallback]
-    public virtual bool GameIsEnded()
-    {
-        return true;
-    }
+    public virtual void GameIsEnded(){}
 
-    internal bool LastManStandingMinigameTypeWinCondition() 
+    [ClientRpc]
+    internal void LastManStandingMinigameTypeWinCondition() 
     {
         foreach (PlayerController player in CustomNetworkManager.players)
         {
@@ -143,29 +139,35 @@ public class BaseGameManager : NetworkBehaviour
                 if (winner != null)
                 {
                     winner = null;
-                    return false;
+                    gameEnd = false;
                 }
                 else
                     winner = player;
             }
         }
         winner.gameObject.GetComponent<PlayerDataForMap>().SetPlacement();
-        return true;
+        gameEnd = true;
     }
 
     /// <summary>
     /// For executing after the minigame finishes
     /// </summary>
     /// 
-    [ClientRpc]
+    [ServerCallback]
     public virtual void ShowGameResult() 
+    {
+        
+    }
+
+    [ClientRpc]
+    internal void ShowResultHelper() 
     {
         if (finishedCountdown)
             return;
 
         //get the player in the order of 1st -> last
         List<GameObject> tmpList = new List<GameObject>();
-        foreach (GameObject card in cardList) 
+        foreach (GameObject card in cardList)
         {
             tmpList.Add(card);
         }

@@ -244,3 +244,4 @@ MonoBehaviour:
   character: {fileID: 2332110982022987368}
   placement: {fileID: 8366749418800905932}
   iconDatabase: {fileID: 11400000, guid: 71deaf0d325233f408a86753a75dd864, type: 2}
+  playerId: 0

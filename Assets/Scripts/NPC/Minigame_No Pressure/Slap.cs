@@ -19,7 +19,6 @@ public class Slap : NetworkBehaviour
 	{
         if (collision.gameObject.tag.Equals("Player"))
         {
-            Debug.Log("Player currently in " + name);
             players.Add(collision.transform.root.gameObject);
         }
             
@@ -31,7 +30,6 @@ public class Slap : NetworkBehaviour
 	{
         if (collision.gameObject.tag.Equals("Player"))
         {
-            Debug.Log("Player is out of " + name);
             players.Remove(collision.transform.root.gameObject);
         }
             
@@ -45,7 +43,6 @@ public class Slap : NetworkBehaviour
 
         foreach (GameObject player in players)
         {
-            Debug.Log("Player out from " + name);
             player.GetComponent<PlayerDataForMap>().isLose = true;
         }
 	}

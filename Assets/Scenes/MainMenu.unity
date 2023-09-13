@@ -1210,6 +1210,7 @@ MonoBehaviour:
     type: 3}
   hasSessionStarted: 0
   curScene: 
+  curBoard: 
 --- !u!4 &2129178331
 Transform:
   m_ObjectHideFlags: 0

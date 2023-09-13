@@ -7,8 +7,8 @@ public class Start_EndAnimationControll : MonoBehaviour
 {
     public GameObject placementCardPrefab;
     public GameObject playerList;
-
-	private CustomNetworkManager networkManager;
+    public List<MinigameFinishPlacementCard> allCard = new List<MinigameFinishPlacementCard>();
+    private CustomNetworkManager networkManager;
     private BaseGameManager gameManager;
 
     private CustomNetworkManager CustomNetworkManager
@@ -37,15 +37,14 @@ public class Start_EndAnimationControll : MonoBehaviour
 
     public void CreatePlacementCards() 
     {
-        foreach (GameObject card in gameManager.cardList) 
+        for (int i = 0; i < gameManager.cardList.Count; i++)
         {
-            GameObject playerplacementCard = Instantiate(placementCardPrefab);
-            MinigameFinishPlacemtnCard playerplacementCardInfo = playerplacementCard.GetComponent<MinigameFinishPlacemtnCard>();
+            GameObject card = gameManager.cardList[i];
             string placement = card.GetComponent<PlayerCharacterMinigameCard>().placement.text;
-            playerplacementCardInfo.SetPlacement(placement);
 
-            playerplacementCard.transform.SetParent(playerList.transform);
-            playerplacementCard.transform.localScale = Vector3.one;
+            allCard[i].SetPlacement(placement);
+
+            allCard[i].gameObject.SetActive(true);
         }
     }
 

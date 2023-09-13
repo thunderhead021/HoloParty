@@ -1,12 +1,22 @@
-﻿public class NoPressureGameManager : BaseGameManager
+﻿using Mirror;
+
+public class NoPressureGameManager : BaseGameManager
 {
+	[ServerCallback]
 	public override void Countdown()
 	{
 		CountdownWithPlayerCards();
 	}
 
-	public override bool GameIsEnded()
+	[ServerCallback]
+	public override void GameIsEnded()
     {
-        return LastManStandingMinigameTypeWinCondition() /*false*/;
+        LastManStandingMinigameTypeWinCondition();
     }
+
+	[ServerCallback]
+	public override void ShowGameResult()
+	{
+		ShowResultHelper();
+	}
 }
