@@ -112,9 +112,11 @@ public class PlayerDataForMap : NetworkBehaviour
     {
         foreach (GameObject card in gameManager.cardList)
         {
+            Debug.Log(card.GetComponent<PlayerCharacterMinigameCard>().playerId);
             if (card.GetComponent<PlayerCharacterMinigameCard>().playerId == GetComponent<PlayerController>().connectID)
             {
                 card.GetComponent<PlayerCharacterMinigameCard>().SetPlactment(CustomNetworkManager.PlayerStanding(GetComponent<PlayerController>()));
+                Debug.Log("placement:" + card.GetComponent<PlayerCharacterMinigameCard>().placement.text);
             }
         }
     }
