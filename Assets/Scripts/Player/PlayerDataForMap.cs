@@ -22,6 +22,8 @@ public class PlayerDataForMap : NetworkBehaviour
 
     [SyncVar]
     public bool canMove = true;
+
+    [SyncVar]
     private BaseGameManager gameManager;
 
     private CustomNetworkManager networkManager;
