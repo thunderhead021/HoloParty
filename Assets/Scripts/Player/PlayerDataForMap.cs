@@ -108,6 +108,7 @@ public class PlayerDataForMap : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
     public void SetPlacement() 
     {
         foreach (GameObject card in gameManager.cardList)

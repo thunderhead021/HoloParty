@@ -146,6 +146,7 @@ public class BaseGameManager : NetworkBehaviour
             }
         }
         winner.gameObject.GetComponent<PlayerDataForMap>().SetPlacement();
+        Debug.Log("End game");
         gameEnd = true;
     }
 
