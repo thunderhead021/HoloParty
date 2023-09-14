@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Start_EndAnimationControll : MonoBehaviour
+public class Start_EndAnimationControll : NetworkBehaviour
 {
     public GameObject placementCardPrefab;
     public GameObject playerList;
@@ -35,6 +35,7 @@ public class Start_EndAnimationControll : MonoBehaviour
         }
     }
 
+    [ClientRpc]
     public void CreatePlacementCards() 
     {
         for (int i = 0; i < gameManager.cardList.Count; i++)
@@ -43,7 +44,6 @@ public class Start_EndAnimationControll : MonoBehaviour
             string placement = card.GetComponent<PlayerCharacterMinigameCard>().placement.text;
 
             allCard[i].SetPlacement(placement);
-
             allCard[i].gameObject.SetActive(true);
         }
     }

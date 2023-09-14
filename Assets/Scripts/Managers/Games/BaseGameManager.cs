@@ -74,6 +74,7 @@ public class BaseGameManager : NetworkBehaviour
                 Countdown();
                 break;
 			case GameState.playing:
+                GameIsEnded();
                 if (gameEnd)
                 {
                     finishedCountdown = false;
@@ -81,7 +82,8 @@ public class BaseGameManager : NetworkBehaviour
                 }
 				break;
 			case GameState.finished:
-				ShowGameResult();
+                playerList.SetActive(false);
+                ShowGameResult();
 				break;
 		}
     }
@@ -117,6 +119,7 @@ public class BaseGameManager : NetworkBehaviour
             PlayerController player = CustomNetworkManager.players[i];
             allCard[i].SetCharImage(player.charID, player.connectID);
             allCard[i].gameObject.SetActive(true);
+            cardList.Add(allCard[i].gameObject);
         }
         countdown.SetActive(true);
         Debug.Log("Countdown");
@@ -140,13 +143,14 @@ public class BaseGameManager : NetworkBehaviour
                 {
                     winner = null;
                     gameEnd = false;
+                    return;
                 }
                 else
                     winner = player;
             }
         }
         winner.gameObject.GetComponent<PlayerDataForMap>().SetPlacement();
-        Debug.Log("End game");
+        Debug.Log("End game " + (winner != null));
         gameEnd = true;
     }
 
