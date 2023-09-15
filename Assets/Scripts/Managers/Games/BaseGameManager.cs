@@ -1,6 +1,7 @@
 ﻿using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ValueComparer : IComparer<GameObject>
 {
@@ -16,9 +17,21 @@ public class BaseGameManager : NetworkBehaviour
     public GameObject finish;
     public GameObject playerList;
     public List<PlayerCharacterMinigameCard> allCard = new List<PlayerCharacterMinigameCard>();
+
+    public List<Image> allPlayerReadyImg = new List<Image>();
+    public Text numberOfPlayerReady;
+    public ChangeSceneBtn backToBoardBtn;
+
     public GameObject playerCardPrefab;
 
     internal CustomNetworkManager networkManager;
+    public static BaseGameManager instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
 
     [HideInInspector]
     public enum GameState
@@ -46,6 +59,9 @@ public class BaseGameManager : NetworkBehaviour
     [SyncVar]
     PlayerController winner;
 
+    [SyncVar]
+    private bool endMinigame = false;
+
     public readonly SyncList<GameObject> cardList = new SyncList<GameObject>();
 
     internal CustomNetworkManager CustomNetworkManager
@@ -58,7 +74,7 @@ public class BaseGameManager : NetworkBehaviour
         }
     }
 
-	private void Start()
+    private void Start()
 	{
         countdown.SetActive(false);
         finish.SetActive(false);
@@ -84,7 +100,9 @@ public class BaseGameManager : NetworkBehaviour
 			case GameState.finished:
                 playerList.SetActive(false);
                 ShowGameResult();
-				break;
+                if (endMinigame)
+                    backToBoardBtn.StartGame(networkManager.curBoard);
+                break;
 		}
     }
 
@@ -185,7 +203,31 @@ public class BaseGameManager : NetworkBehaviour
 
 
         Debug.Log("End");
+        SetPlayerCountReadyText();
         finish.SetActive(true);
         finishedCountdown = true;
+    }
+
+    [ClientRpc]
+    internal void SetPlayerCountReadyText() 
+    {
+        int ready = 0;
+        foreach (PlayerController player in networkManager.players) 
+        {
+            if (player.minigameReady)
+                ready++;
+        }
+        numberOfPlayerReady.text = ready + "/" + networkManager.players.Count;
+        endMinigame = (ready == networkManager.players.Count);
+    }
+
+    public void UpdatePlayerReady() 
+    {
+        for(int i = 0; i < networkManager.players.Count; i++)
+        {
+            allPlayerReadyImg[i].color = networkManager.players[i].minigameReady ? Color.green : Color.red;
+        }
+        if(state == GameState.finished)
+            SetPlayerCountReadyText();
     }
 }

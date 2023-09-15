@@ -45,6 +45,9 @@ public class Start_EndAnimationControll : NetworkBehaviour
 
             allCard[i].SetPlacement(placement);
             allCard[i].gameObject.SetActive(true);
+
+            gameManager.allPlayerReadyImg[i].gameObject.SetActive(true);
+            gameManager.allPlayerReadyImg[i].color = Color.red;
         }
     }
 

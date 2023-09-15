@@ -16,6 +16,8 @@ public class PlayerController : NetworkBehaviour
 
     [SyncVar(hook = nameof(playerReadyUpdate))] public bool ready;
 
+    [SyncVar(hook = nameof(minigameReadyUpdate))] public bool minigameReady;
+
     //Character data
     [SyncVar(hook = nameof(playerCharID))] public int charID = -1;
     [SyncVar(hook = nameof(playerCharModel))] public Color charModel;
@@ -116,6 +118,35 @@ public class PlayerController : NetworkBehaviour
             ready = newVal;
         if (isClient)
             LobbyManager.instance.UpdatePlayerList();
+    }
+
+
+    [Command]
+    private void CmdSetPlayerMinigameReady()
+    {
+        minigameReadyUpdate(minigameReady, !minigameReady);
+    }
+
+    public void ChangeMinigameReady()
+    {
+        if (isOwned)
+            CmdSetPlayerMinigameReady();
+    }
+
+    private void minigameReadyUpdate(bool oldVal, bool newVal)
+    {
+        if (isServer)
+        {
+            minigameReady = newVal;
+        }
+        if (isClient)
+            ClientminigameReadyUpdate();
+    }
+
+    private void ClientminigameReadyUpdate()
+    {
+        if(GameObject.FindGameObjectWithTag("GameManager") != null)
+            BaseGameManager.instance.UpdatePlayerReady();
     }
 
     [Command]

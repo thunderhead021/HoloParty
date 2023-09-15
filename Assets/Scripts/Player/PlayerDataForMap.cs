@@ -72,6 +72,7 @@ public class PlayerDataForMap : NetworkBehaviour
                     if (playerBoardPos != Vector3.zero && SceneManager.GetActiveScene().name.Contains("Board"))
                     {
                         notUpdate = true;
+                        GetComponent<PlayerController>().minigameReady = false;
                     }
                     else 
                     {
