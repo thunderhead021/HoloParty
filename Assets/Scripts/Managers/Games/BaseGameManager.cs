@@ -109,7 +109,6 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing before the minigame starts
     /// </summary>
-    [ServerCallback]
     public virtual void EndDemo() 
     {
         Debug.Log("Demo");
@@ -119,13 +118,11 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing the countdown to start the minigame.
     /// </summary>
-    [ServerCallback]
     public virtual void Countdown() {
         
     }
 
 
-    [ClientRpc]
     internal void CountdownWithPlayerCards() 
     {
         if (finishedCountdown)
@@ -147,10 +144,8 @@ public class BaseGameManager : NetworkBehaviour
     /// <summary>
     /// For executing the minigame's core gameplay loop.
     /// </summary>
-    [ServerCallback]
     public virtual void GameIsEnded(){}
 
-    [ClientRpc]
     internal void LastManStandingMinigameTypeWinCondition() 
     {
         foreach (PlayerController player in CustomNetworkManager.players)
@@ -176,13 +171,11 @@ public class BaseGameManager : NetworkBehaviour
     /// For executing after the minigame finishes
     /// </summary>
     /// 
-    [ServerCallback]
     public virtual void ShowGameResult() 
     {
         
     }
 
-    [ClientRpc]
     internal void ShowResultHelper() 
     {
         if (finishedCountdown)
@@ -208,7 +201,6 @@ public class BaseGameManager : NetworkBehaviour
         finishedCountdown = true;
     }
 
-    [ClientRpc]
     internal void SetPlayerCountReadyText() 
     {
         int ready = 0;
