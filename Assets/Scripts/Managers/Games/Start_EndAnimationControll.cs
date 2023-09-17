@@ -56,13 +56,25 @@ public class Start_EndAnimationControll : NetworkBehaviour
         StartCoroutine(StartFinished());
     }
 
-    IEnumerator StartFinished() 
+    IEnumerator StartFinished()
     {
         PlayerCanMove(true);
         yield return new WaitUntil(() => AllPlayerCanMove());
         gameManager.gameStart = true;
-        gameManager.state = BaseGameManager.GameState.playing;
+
+        StartAniHelper();
         gameObject.SetActive(false);
+    }
+
+    [ServerCallback]
+    private void StartAniHelper() 
+    {
+        ChangeState msg = new ChangeState
+        {
+            gameState = GameState.playing
+        };
+
+        NetworkServer.SendToAll(msg);
     }
 
     private bool AllPlayerCanMove() 

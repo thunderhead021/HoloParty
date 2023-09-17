@@ -39,8 +39,8 @@ public class SlapController : NetworkBehaviour
 
     private IEnumerator CallFunctionInterval()
     {
-        yield return new WaitUntil(() => gameManager.state == BaseGameManager.GameState.playing);
-        while (gameManager.state == BaseGameManager.GameState.playing)
+        yield return new WaitUntil(() => gameManager.state == GameState.playing);
+        while (gameManager.state == GameState.playing)
         {
             
             yield return new WaitUntil(() => allFinished() == true);

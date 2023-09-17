@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,19 @@ public class ValueComparer : IComparer<GameObject>
     {
         return x.GetComponent<PlayerCharacterMinigameCard>().playerId.CompareTo(y.GetComponent<PlayerCharacterMinigameCard>().playerId);
     }
+}
+
+public struct ChangeState : NetworkMessage 
+{
+    public GameState gameState;
+}
+
+public enum GameState
+{
+    demo = 0,
+    countingDown = 1,
+    playing = 2,
+    finished = 3,
 }
 
 public class BaseGameManager : NetworkBehaviour
@@ -33,16 +47,7 @@ public class BaseGameManager : NetworkBehaviour
             instance = this;
     }
 
-    [HideInInspector]
-    public enum GameState
-    {
-        demo = 0,
-        countingDown = 1,
-        playing = 2,
-        finished = 3,
-    }
-
-    [SyncVar]
+	[SyncVar]
     public GameState state;
 
     [SyncVar]
@@ -82,7 +87,20 @@ public class BaseGameManager : NetworkBehaviour
         state = GameState.demo;
     }
 
-	private void FixedUpdate()
+    public void SetupClient()
+    {
+        if (!NetworkClient.active)
+            return;
+
+        NetworkClient.RegisterHandler<ChangeState>(OnStateChange);
+    }
+
+    public void OnStateChange(ChangeState curGameState)
+    {
+        state = curGameState.gameState;
+    }
+
+    private void FixedUpdate()
 	{
         switch (state)
         {
@@ -93,8 +111,7 @@ public class BaseGameManager : NetworkBehaviour
                 GameIsEnded();
                 if (gameEnd)
                 {
-                    finishedCountdown = false;
-                    state = GameState.finished;
+                    endGame();
                 }
 				break;
 			case GameState.finished:
@@ -106,13 +123,31 @@ public class BaseGameManager : NetworkBehaviour
 		}
     }
 
+    [ServerCallback]
+    private void endGame() 
+    {
+        finishedCountdown = false;
+        ChangeState msg = new ChangeState
+        {
+            gameState = GameState.finished
+        };
+
+        NetworkServer.SendToAll(msg);
+    }
+
     /// <summary>
     /// For executing before the minigame starts
     /// </summary>
+    [ServerCallback]
     public virtual void EndDemo() 
     {
         Debug.Log("Demo");
-        state = GameState.countingDown;
+        ChangeState msg = new ChangeState
+        {
+            gameState = GameState.countingDown
+        };
+
+        NetworkServer.SendToAll(msg);
     }
 
     /// <summary>

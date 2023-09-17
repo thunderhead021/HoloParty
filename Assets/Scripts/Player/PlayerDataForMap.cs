@@ -66,13 +66,14 @@ public class PlayerDataForMap : NetworkBehaviour
                 if (mapData != null && mapData.transform.root == mapData.transform && GetComponent<PlayerController>().charID >= 0)
                 {
                     gameManager = GameObject.FindGameObjectWithTag("GameManager")?.GetComponent<BaseGameManager>();
+                    gameManager?.SetupClient();
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);
                     UpdatePlayerModel();
                     if (playerBoardPos != Vector3.zero && SceneManager.GetActiveScene().name.Contains("Board"))
                     {
                         notUpdate = true;
-                        //GetComponent<PlayerController>().minigameReady = false;
+                        GetComponent<PlayerController>().minigameReady = false;
                     }
                     else 
                     {
