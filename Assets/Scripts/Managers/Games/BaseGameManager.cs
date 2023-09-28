@@ -85,10 +85,6 @@ public class BaseGameManager : NetworkBehaviour
         finish.SetActive(false);
         playerList.SetActive(false);
         state = GameState.demo;
-    }
-
-    public void SetupClient()
-    {
         if (!NetworkClient.active)
             return;
 
@@ -97,6 +93,7 @@ public class BaseGameManager : NetworkBehaviour
 
     public void OnStateChange(ChangeState curGameState)
     {
+        Debug.Log("Change game state");
         state = curGameState.gameState;
     }
 
@@ -132,7 +129,7 @@ public class BaseGameManager : NetworkBehaviour
             gameState = GameState.finished
         };
 
-        NetworkServer.SendToAll(msg);
+        CustomNetworkManager.ChangeMiniGameState(msg);
     }
 
     /// <summary>
@@ -147,7 +144,7 @@ public class BaseGameManager : NetworkBehaviour
             gameState = GameState.countingDown
         };
 
-        NetworkServer.SendToAll(msg);
+        CustomNetworkManager.ChangeMiniGameState(msg);
     }
 
     /// <summary>

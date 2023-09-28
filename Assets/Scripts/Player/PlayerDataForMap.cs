@@ -66,7 +66,6 @@ public class PlayerDataForMap : NetworkBehaviour
                 if (mapData != null && mapData.transform.root == mapData.transform && GetComponent<PlayerController>().charID >= 0)
                 {
                     gameManager = GameObject.FindGameObjectWithTag("GameManager")?.GetComponent<BaseGameManager>();
-                    gameManager?.SetupClient();
                     GameObject duplicate = Instantiate(mapData);
                     duplicate.transform.SetParent(transform);
                     UpdatePlayerModel();

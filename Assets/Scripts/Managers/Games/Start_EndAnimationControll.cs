@@ -74,7 +74,7 @@ public class Start_EndAnimationControll : NetworkBehaviour
             gameState = GameState.playing
         };
 
-        NetworkServer.SendToAll(msg);
+        CustomNetworkManager.ChangeMiniGameState(msg);
     }
 
     private bool AllPlayerCanMove() 

@@ -38,6 +38,11 @@ public class CustomNetworkManager : NetworkManager
 		return standing;
 	}
 
+	public void ChangeMiniGameState(ChangeState curGameState) 
+	{
+		NetworkServer.SendToAll(curGameState);
+	}
+
 	public override void Start()
 	{
 		base.Start();
